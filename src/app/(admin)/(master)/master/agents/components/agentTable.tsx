@@ -132,12 +132,6 @@ export default function AgentTable() {
                     isHeader
                     className="px-5 py-3 text-start text-gray-500 font-medium text-theme-xs"
                   >
-                    Email
-                  </TableCell>
-                  <TableCell
-                    isHeader
-                    className="px-5 py-3 text-start text-gray-500 font-medium text-theme-xs"
-                  >
                     Phone
                   </TableCell>
                   <TableCell
@@ -150,7 +144,7 @@ export default function AgentTable() {
                     isHeader
                     className="px-5 py-3 text-start text-gray-500 font-medium text-theme-xs"
                   >
-                    Incentive %
+                    Winning Commission %
                   </TableCell>
                   <TableCell
                     isHeader
@@ -186,16 +180,13 @@ export default function AgentTable() {
                       {agent.username}
                     </TableCell>
                     <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
-                      {agent.email}
-                    </TableCell>
-                    <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
                       {agent.phone_number || "—"}
                     </TableCell>
                     <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
                       {agent.agent_code || "—"}
                     </TableCell>
                     <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
-                      {agent.incentive_percentage}
+                      {agent.winning_commission_percentage ?? agent.incentive_percentage ?? "—"}
                     </TableCell>
                     <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
                       <span

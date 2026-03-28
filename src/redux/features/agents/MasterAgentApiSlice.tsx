@@ -3,7 +3,7 @@ import { masterAppApi } from "@/redux/services/appApi";
 export type MasterAgentItem = {
   id: number;
   name: string;
-  email: string;
+  email?: string;
   phone_number: string;
   username: string;
   agent_code: string;
@@ -12,6 +12,7 @@ export type MasterAgentItem = {
   master_id: number;
   status: string;
   force_reset_password: boolean;
+  is_default?: number;
   last_logined: string | null;
   email_verified_at: string | null;
   created_at: string;
@@ -20,12 +21,14 @@ export type MasterAgentItem = {
   master?: {
     id: number;
     name: string;
-    email: string;
+    email?: string;
     phone_number: string;
     username: string;
-    incentive_percentage: number;
+    winning_commission_percentage?: number;
+    incentive_percentage?: number;
     status: string;
     force_reset_password: boolean;
+    is_default?: number;
     last_logined: string | null;
     email_verified_at: string | null;
     created_at: string;
