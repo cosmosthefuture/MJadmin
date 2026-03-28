@@ -3,12 +3,14 @@ import { appApi } from "@/redux/services/appApi";
 export type MasterItem = {
   id: number;
   name: string;
-  email: string;
+  email?: string;
   phone_number: string;
   username: string;
-  incentive_percentage: number;
+  winning_commission_percentage?: number;
+  incentive_percentage?: number;
   status: string;
   force_reset_password: boolean;
+  is_default?: number;
   last_logined: string | null;
   email_verified_at: string | null;
   created_at: string;
@@ -37,7 +39,7 @@ export type CreateMasterPayload = {
   email?: string;
   phone_number: string;
   username: string;
-  incentive_percentage: number;
+  winning_commission_percentage: number;
   password: string;
   password_confirmation: string;
 };
@@ -64,7 +66,7 @@ export type UpdateMasterPayload = {
   email?: string;
   phone_number: string;
   username: string;
-  incentive_percentage: number;
+  winning_commission_percentage: number;
 };
 
 export const masterApiSlice = appApi.injectEndpoints({

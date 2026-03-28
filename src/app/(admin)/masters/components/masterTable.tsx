@@ -120,12 +120,6 @@ export default function MasterTable() {
                     isHeader
                     className="px-5 py-3 text-start text-gray-500 font-medium text-theme-xs"
                   >
-                    Email
-                  </TableCell>
-                  <TableCell
-                    isHeader
-                    className="px-5 py-3 text-start text-gray-500 font-medium text-theme-xs"
-                  >
                     Phone
                   </TableCell>
                   <TableCell
@@ -174,13 +168,10 @@ export default function MasterTable() {
                         {master.username}
                       </TableCell>
                       <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
-                        {master.email}
-                      </TableCell>
-                      <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
                         {master.phone_number || "—"}
                       </TableCell>
                       <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
-                        {master.incentive_percentage}
+                        {master.incentive_percentage ?? master.winning_commission_percentage ?? "—"}
                       </TableCell>
                       <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
                         <span
