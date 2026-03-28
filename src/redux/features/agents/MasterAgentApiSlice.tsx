@@ -82,6 +82,11 @@ export type AgentDetailResponse = {
   data: MasterAgentItem;
 };
 
+export type AddMoneyToAgentPayload = {
+  agent_id: number;
+  amount: string;
+};
+
 export const masterAgentApiSlice = masterAppApi.injectEndpoints({
   endpoints: (build) => ({
     getMasterAgents: build.query<
@@ -131,6 +136,15 @@ export const masterAgentApiSlice = masterAppApi.injectEndpoints({
       invalidatesTags: () => [{ type: "agentsApi" }],
     }),
 
+    addMoneyToAgent: build.mutation<unknown, AddMoneyToAgentPayload>({
+      query: (payload) => ({
+        url: "agents/add-money",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: () => [{ type: "agentsApi" }],
+    }),
+
     toggleAgentStatus: build.mutation<unknown, { id: number; deactivate: boolean }>({
       query: ({ id, deactivate }) => ({
         url: `agents/${id}/toggle-status`,
@@ -147,5 +161,6 @@ export const {
   useGetAgentByIdQuery,
   useCreateAgentMutation,
   useUpdateAgentMutation,
+  useAddMoneyToAgentMutation,
   useToggleAgentStatusMutation,
 } = masterAgentApiSlice;

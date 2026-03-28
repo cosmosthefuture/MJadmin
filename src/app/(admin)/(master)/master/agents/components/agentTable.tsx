@@ -3,6 +3,7 @@
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
 import { useEffect, useState } from "react";
 import {
+  useAddMoneyToAgentMutation,
   useGetMasterAgentsQuery,
   useToggleAgentStatusMutation,
 } from "@/redux/features/agents/MasterAgentApiSlice";
@@ -19,6 +20,8 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import moment from "moment";
 import { useRouter } from "next/navigation";
+import { Modal } from "@/components/ui/modal";
+import Label from "@/components/form/Label";
 
 export default function AgentTable() {
   const dispatch = useAppDispatch();
@@ -27,9 +30,13 @@ export default function AgentTable() {
   const router = useRouter();
 
   const [toggleAgentStatus] = useToggleAgentStatusMutation();
+  const [addMoneyToAgent, { isLoading: isAddingMoney }] = useAddMoneyToAgentMutation();
 
   const [searchText, setSearchText] = useState("");
   const debouncedSearchText = useDebounce(searchText);
+  const [isAddMoneyModalOpen, setIsAddMoneyModalOpen] = useState(false);
+  const [selectedAgentId, setSelectedAgentId] = useState<number | null>(null);
+  const [amount, setAmount] = useState("");
 
   const { data, isLoading } = useGetMasterAgentsQuery(
     {
@@ -59,6 +66,74 @@ export default function AgentTable() {
     } catch (error) {
       console.log(error);
       toast.error("Failed to update agent status");
+    }
+  };
+
+  const handleOpenAddMoneyModal = (agentId: number) => {
+    setSelectedAgentId(agentId);
+    setAmount("");
+    setIsAddMoneyModalOpen(true);
+  };
+
+  const handleCloseAddMoneyModal = () => {
+    setIsAddMoneyModalOpen(false);
+    setSelectedAgentId(null);
+    setAmount("");
+  };
+
+  const handleAddMoney = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!selectedAgentId || !amount.trim()) return;
+
+    try {
+      await addMoneyToAgent({
+        agent_id: selectedAgentId,
+        amount: amount.trim(),
+      }).unwrap();
+      toast.success("Money added successfully");
+      handleCloseAddMoneyModal();
+    } catch (error: unknown) {
+      let errorMessage = "Failed to add money";
+      if (error && typeof error === "object") {
+        if (
+          "data" in error &&
+          typeof
+            (
+              error as {
+                data?: { message?: string; response?: { message?: string } };
+              }
+            ).data?.message === "string"
+        ) {
+          errorMessage =
+            (
+              error as {
+                data?: { message?: string; response?: { message?: string } };
+              }
+            ).data?.message || errorMessage;
+        } else if (
+          "data" in error &&
+          typeof
+            (
+              error as {
+                data?: { message?: string; response?: { message?: string } };
+              }
+            ).data?.response?.message === "string"
+        ) {
+          errorMessage =
+            (
+              error as {
+                data?: { message?: string; response?: { message?: string } };
+              }
+            ).data?.response?.message || errorMessage;
+        } else if (
+          "message" in error &&
+          typeof (error as { message?: string }).message === "string"
+        ) {
+          errorMessage = (error as { message?: string }).message || errorMessage;
+        }
+      }
+      toast.error(errorMessage);
     }
   };
 
@@ -144,7 +219,7 @@ export default function AgentTable() {
                     isHeader
                     className="px-5 py-3 text-start text-gray-500 font-medium text-theme-xs"
                   >
-                    Winning Commission %
+                    Commission %
                   </TableCell>
                   <TableCell
                     isHeader
@@ -224,6 +299,28 @@ export default function AgentTable() {
                           </svg>
                         </Link>
 
+                        <button
+                          type="button"
+                          title="Add Money"
+                          onClick={() => handleOpenAddMoneyModal(agent.id)}
+                          className="-mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-lg border border-gray-200 text-gray-600 transition-colors hover:border-brand-300 hover:text-brand-500 dark:border-gray-700 dark:text-gray-300"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width={16}
+                            height={16}
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M12 5v14"></path>
+                            <path d="M5 12h14"></path>
+                          </svg>
+                        </button>
+
                         <Switch
                           checked={agent.status === "active"}
                           onClick={() => handleToggleActive(agent.id, agent.status === "active")}
@@ -245,6 +342,48 @@ export default function AgentTable() {
           </div>
         </div>
       </div>
+
+      <Modal
+        isOpen={isAddMoneyModalOpen}
+        onClose={handleCloseAddMoneyModal}
+        className="max-w-[500px] p-6 lg:p-8"
+      >
+        <div>
+          <h3 className="mb-2 text-xl font-semibold text-gray-900 dark:text-white">Add Money</h3>
+          <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
+            Add balance to the selected agent.
+          </p>
+
+          <form onSubmit={handleAddMoney} className="space-y-4">
+            <div>
+              <Label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Amount
+              </Label>
+              <Input
+                type="number"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                placeholder="Enter amount"
+                disabled={isAddingMoney}
+              />
+            </div>
+
+            <div className="flex items-center justify-end gap-3 border-t border-gray-200 pt-4 dark:border-gray-700">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleCloseAddMoneyModal}
+                disabled={isAddingMoney}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" variant="primary" disabled={isAddingMoney}>
+                {isAddingMoney ? "Adding..." : "Add Money"}
+              </Button>
+            </div>
+          </form>
+        </div>
+      </Modal>
     </div>
   );
 }
