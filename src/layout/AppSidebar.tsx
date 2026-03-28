@@ -122,6 +122,11 @@ const AppSidebar: React.FC = () => {
         name: "Withdrawal Histories",
         path: "/agents/withdraw-history",
       });
+      items.push({
+        icon: <Banknote size={21} />,
+        name: "Wallet Records",
+        path: "/agents/wallet-records",
+      });
 
       items.push({
         icon: <HandCoins size={21} />,
