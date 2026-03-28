@@ -4,7 +4,6 @@ import { DEFAULT_PER_PAGE } from "@/lib/constants";
 export type GameRoomUser = {
   id: number;
   name: string;
-  email: string;
   phone_number: string;
   username: string;
   status: string;
@@ -28,22 +27,32 @@ export type GameRoomGame = {
 export type GameRoomRule = {
   id: number;
   rule_name: string;
-  max_bet_amount: number;
-  min_bet_amount: number;
-  time_per_round: number;
-  user_limit: number;
+  match_qty_per_round: number;
+  max_player: number;
+  bet_amount: number;
   status: string;
   game_id: number;
-  created_by: number;
-  updated_by: number | null;
+  created_by?: number;
+  updated_by?: number | null;
   created_at: string;
   updated_at: string;
   deleted_at: string | null;
+  fees?: Array<{
+    id: number;
+    mah_jong_game_rule_id: number;
+    fee_type: "room" | "registration" | "winning_commission";
+    amount: number;
+    payer_type: "each_player" | "winner";
+    created_at: string;
+    updated_at: string;
+    deleted_at: string | null;
+  }>;
 };
 
 export type GameRoomItem = {
   id: number;
-  game_rule_id: number;
+  game_rule_id?: number;
+  mah_jong_game_rule_id?: number;
   game_id: number;
   room_name: string;
   room_code: string;
@@ -53,7 +62,8 @@ export type GameRoomItem = {
   updated_at: string;
   deleted_at: string | null;
   game: GameRoomGame;
-  game_rule: GameRoomRule;
+  game_rule?: GameRoomRule;
+  mah_jong_game_rule?: GameRoomRule;
 };
 
 export type GameRoomMeta = {
@@ -76,7 +86,7 @@ export type CreateGameRoomRequest = {
   room_name: string;
   room_code: string;
   game_id: number;
-  game_rule_id: number;
+  mah_jong_game_rule_id: number;
 };
 
 export type UpdateGameRoomRequest = CreateGameRoomRequest & { id: number };
@@ -97,14 +107,14 @@ export const gameRoomApiSlice = appApi.injectEndpoints({
         params.set("page", page.toString());
         params.set("per_page", perPage.toString());
         if (search) params.set("search", search);
-        return `game-rooms/all?${params.toString()}`;
+        return `mah-jong-game-rooms/all?${params.toString()}`;
       },
       transformResponse: (response: GameRoomResponse) => response,
       providesTags: () => [{ type: "gameRooms" }],
     }),
     createGameRoom: build.mutation<GameRoomResponse, CreateGameRoomRequest>({
       query: (body) => ({
-        url: "game-rooms",
+        url: "mah-jong-game-rooms",
         method: "POST",
         body,
       }),
@@ -112,7 +122,7 @@ export const gameRoomApiSlice = appApi.injectEndpoints({
     }),
     updateGameRoom: build.mutation<GameRoomResponse, UpdateGameRoomRequest>({
       query: ({ id, ...body }) => ({
-        url: `game-rooms/${id}`,
+        url: `mah-jong-game-rooms/${id}`,
         method: "PUT",
         body,
       }),
@@ -120,7 +130,7 @@ export const gameRoomApiSlice = appApi.injectEndpoints({
     }),
     toggleGameRoomStatus: build.mutation<GameRoomResponse, ToggleGameRoomRequest>({
       query: ({ id, deactivate }) => ({
-        url: `game-rooms/${id}/toggle-status`,
+        url: `mah-jong-game-rooms/${id}/toggle-status`,
         method: "PATCH",
         body: { deactivate },
       }),

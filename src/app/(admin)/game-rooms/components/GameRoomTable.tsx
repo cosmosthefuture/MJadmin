@@ -40,7 +40,7 @@ export default function GameRoomTable() {
     room_name: "",
     room_code: "",
     game_id: "",
-    game_rule_id: "",
+    mah_jong_game_rule_id: "",
   });
   const [togglingId, setTogglingId] = useState<number | null>(null);
   const debouncedSearchText = useDebounce(searchText);
@@ -85,14 +85,14 @@ export default function GameRoomTable() {
         room_name: "",
         room_code: "",
         game_id: "",
-        game_rule_id: "",
+        mah_jong_game_rule_id: "",
       });
     }
   }, [isModalOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formValues.game_id || !formValues.game_rule_id) return;
+    if (!formValues.game_id || !formValues.mah_jong_game_rule_id) return;
     try {
       if (editingRoom) {
         await updateGameRoom({
@@ -100,14 +100,14 @@ export default function GameRoomTable() {
           room_name: formValues.room_name,
           room_code: formValues.room_code,
           game_id: Number(formValues.game_id),
-          game_rule_id: Number(formValues.game_rule_id),
+          mah_jong_game_rule_id: Number(formValues.mah_jong_game_rule_id),
         }).unwrap();
       } else {
         await createGameRoom({
           room_name: formValues.room_name,
           room_code: formValues.room_code,
           game_id: Number(formValues.game_id),
-          game_rule_id: Number(formValues.game_rule_id),
+          mah_jong_game_rule_id: Number(formValues.mah_jong_game_rule_id),
         }).unwrap();
       }
       setIsModalOpen(false);
@@ -248,7 +248,7 @@ export default function GameRoomTable() {
                       {room.game?.name ?? "-"}
                     </TableCell>
                     <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
-                      {room.game_rule?.rule_name ?? "-"}
+                      {room.mah_jong_game_rule?.rule_name ?? room.game_rule?.rule_name ?? "-"}
                     </TableCell>
                     <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
                       {room.created_by?.name ?? "-"}
@@ -267,7 +267,9 @@ export default function GameRoomTable() {
                               room_name: room.room_name,
                               room_code: room.room_code,
                               game_id: room.game_id.toString(),
-                              game_rule_id: room.game_rule_id.toString(),
+                              mah_jong_game_rule_id: String(
+                                room.mah_jong_game_rule_id ?? room.game_rule_id ?? ""
+                              ),
                             });
                             setIsModalOpen(true);
                           }}
@@ -351,7 +353,7 @@ export default function GameRoomTable() {
                   setFormValues((prev) => ({
                     ...prev,
                     game_id: gameId,
-                    game_rule_id: "",
+                    mah_jong_game_rule_id: "",
                   }));
                 }}
                 options={gameOptions}
@@ -362,10 +364,10 @@ export default function GameRoomTable() {
               <label className="text-sm text-gray-600 dark:text-gray-300">Game Rule</label>
               <Select
                 required
-                value={formValues.game_rule_id}
+                value={formValues.mah_jong_game_rule_id}
                 disabled={!!editingRoom}
                 onChange={(e) =>
-                  setFormValues((prev) => ({ ...prev, game_rule_id: e.target.value }))
+                  setFormValues((prev) => ({ ...prev, mah_jong_game_rule_id: e.target.value }))
                 }
                 options={gameRuleOptions}
                 placeholder="Select game rule"
