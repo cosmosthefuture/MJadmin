@@ -306,6 +306,12 @@ export default function UserTable() {
                     isHeader
                     className="px-5 py-3 text-start text-gray-500 font-medium text-theme-xs"
                   >
+                    Balance
+                  </TableCell>
+                  <TableCell
+                    isHeader
+                    className="px-5 py-3 text-start text-gray-500 font-medium text-theme-xs"
+                  >
                     Status
                   </TableCell>
                   <TableCell
@@ -351,6 +357,9 @@ export default function UserTable() {
                       </TableCell>
                       <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
                         {user.phone_number || "—"}
+                      </TableCell>
+                      <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
+                        {user.balance || "0"}
                       </TableCell>
                       <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
                         <span

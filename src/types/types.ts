@@ -219,6 +219,7 @@ export type UserDetailT = {
   email: string;
   phone_number: string;
   username: string;
+  balance?: string;
   status: "active" | "inactive";
   email_verified_at: string;
   is_verified: boolean;

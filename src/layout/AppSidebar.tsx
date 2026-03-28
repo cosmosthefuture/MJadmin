@@ -115,6 +115,7 @@ const AppSidebar: React.FC = () => {
     }
 
     if (authType === "agent") {
+      items.push({ icon: <Users size={20} />, name: "Users", path: "/agents/users" });
       items.push({ icon: <TableIcon />, name: "Reports", path: "/agents/incentive-transactions" });
       items.push({
         icon: <BanknoteArrowUp size={21} />,

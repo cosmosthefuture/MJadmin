@@ -186,6 +186,8 @@ export const agentAppApi = createApi({
   reducerPath: "agentApi",
   baseQuery: agentBaseQueryWithReauth,
   tagTypes: [
+    "agentUsers",
+    "agentUserById",
     "agentPaymentMethods",
     "agentWithdrawHistory",
     "agentDailyCashbookRecords",
