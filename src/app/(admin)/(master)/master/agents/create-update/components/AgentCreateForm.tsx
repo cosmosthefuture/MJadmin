@@ -17,7 +17,7 @@ type AgentCreateFormT = {
   name: string;
   phone_number: string;
   username: string;
-  incentive_percentage: number;
+  winning_commission_percentage: number;
   agent_code: string;
   password: string;
   password_confirmation: string;
@@ -58,7 +58,7 @@ export default function AgentCreateForm() {
       name: "",
       phone_number: "",
       username: "",
-      incentive_percentage: 1,
+      winning_commission_percentage: 1,
       agent_code: "",
       password: "",
       password_confirmation: "",
@@ -74,7 +74,10 @@ export default function AgentCreateForm() {
     setValue("phone_number", agentData.phone_number || "");
     setValue("username", agentData.username || "");
     setValue("agent_code", agentData.agent_code || "");
-    setValue("incentive_percentage", Number(agentData.incentive_percentage ?? 0));
+    setValue(
+      "winning_commission_percentage",
+      Number(agentData.winning_commission_percentage ?? agentData.incentive_percentage ?? 0)
+    );
   }, [isEditMode, agentData, setValue]);
 
   const onSubmit = async (data: AgentCreateFormT) => {
@@ -86,7 +89,7 @@ export default function AgentCreateForm() {
           phone_number: data.phone_number,
           username: data.username,
           agent_code: data.agent_code,
-          incentive_percentage: Number(data.incentive_percentage),
+          winning_commission_percentage: Number(data.winning_commission_percentage),
         }).unwrap();
         toast.success("Agent updated successfully");
       } else {
@@ -95,7 +98,7 @@ export default function AgentCreateForm() {
           phone_number: data.phone_number,
           username: data.username,
           agent_code: data.agent_code,
-          incentive_percentage: Number(data.incentive_percentage),
+          winning_commission_percentage: Number(data.winning_commission_percentage),
           password: data.password,
           password_confirmation: data.password_confirmation,
         }).unwrap();
@@ -235,23 +238,23 @@ export default function AgentCreateForm() {
 
             <div>
               <label
-                htmlFor="incentive_percentage"
+                htmlFor="winning_commission_percentage"
                 className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
               >
-                Incentive Percentage *
+                Winning Commission Percentage *
               </label>
               <Input
-                id="incentive_percentage"
+                id="winning_commission_percentage"
                 type="number"
-                {...register("incentive_percentage", {
-                  required: "Incentive percentage is required.",
+                {...register("winning_commission_percentage", {
+                  required: "Winning commission percentage is required.",
                   valueAsNumber: true,
                 })}
-                placeholder="Enter incentive percentage"
+                placeholder="Enter winning commission percentage"
                 required
                 disabled={isLoading}
-                error={!!errors.incentive_percentage}
-                hint={errors.incentive_percentage?.message}
+                error={!!errors.winning_commission_percentage}
+                hint={errors.winning_commission_percentage?.message}
               />
             </div>
 

@@ -7,7 +7,8 @@ export type MasterAgentItem = {
   phone_number: string;
   username: string;
   agent_code: string;
-  incentive_percentage: number;
+  winning_commission_percentage?: number;
+  incentive_percentage?: number;
   master_id: number;
   status: string;
   force_reset_password: boolean;
@@ -54,7 +55,7 @@ export type CreateAgentPayload = {
   email?: string;
   phone_number: string;
   username: string;
-  incentive_percentage: number;
+  winning_commission_percentage: number;
   agent_code: string;
   password: string;
   password_confirmation: string;
@@ -66,7 +67,7 @@ export type UpdateAgentPayload = {
   email?: string;
   phone_number: string;
   username: string;
-  incentive_percentage: number;
+  winning_commission_percentage: number;
   agent_code: string;
 };
 
