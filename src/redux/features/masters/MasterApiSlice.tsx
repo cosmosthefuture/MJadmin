@@ -69,6 +69,11 @@ export type UpdateMasterPayload = {
   winning_commission_percentage: number;
 };
 
+export type AddMoneyToMasterPayload = {
+  master_id: number;
+  amount: string;
+};
+
 export const masterApiSlice = appApi.injectEndpoints({
   endpoints: (build) => ({
     getAllMasters: build.query<
@@ -115,6 +120,15 @@ export const masterApiSlice = appApi.injectEndpoints({
       invalidatesTags: () => [{ type: "mastersApi" }],
     }),
 
+    addMoneyToMaster: build.mutation<CreateMasterResponse, AddMoneyToMasterPayload>({
+      query: (payload) => ({
+        url: "masters/add-money",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: () => [{ type: "mastersApi" }],
+    }),
+
     toggleMasterStatus: build.mutation<
       CreateMasterResponse,
       {
@@ -137,5 +151,6 @@ export const {
   useGetMasterByIdQuery,
   useCreateMasterMutation,
   useUpdateMasterMutation,
+  useAddMoneyToMasterMutation,
   useToggleMasterStatusMutation,
 } = masterApiSlice;

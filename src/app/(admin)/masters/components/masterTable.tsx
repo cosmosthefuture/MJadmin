@@ -3,6 +3,7 @@
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
 import { useState } from "react";
 import {
+  useAddMoneyToMasterMutation,
   useGetAllMastersQuery,
   useToggleMasterStatusMutation,
 } from "@/redux/features/masters/MasterApiSlice";
@@ -20,6 +21,8 @@ import { DEFAULT_PER_PAGE } from "@/lib/constants";
 import { useCheckPermission } from "@/hooks/useCheckPermissions";
 import NoPermissionUI from "@/components/NoPermissionUI";
 import moment from "moment";
+import { Modal } from "@/components/ui/modal";
+import Label from "@/components/form/Label";
 
 export default function MasterTable() {
   const dispatch = useAppDispatch();
@@ -42,6 +45,10 @@ export default function MasterTable() {
   const masters = data?.data ?? [];
 
   const [toggleMasterStatus] = useToggleMasterStatusMutation();
+  const [addMoneyToMaster, { isLoading: isAddingMoney }] = useAddMoneyToMasterMutation();
+  const [isAddMoneyModalOpen, setIsAddMoneyModalOpen] = useState(false);
+  const [selectedMasterId, setSelectedMasterId] = useState<number | null>(null);
+  const [amount, setAmount] = useState("");
 
   const handleToggleActive = async (id: number, status: boolean) => {
     try {
@@ -50,6 +57,72 @@ export default function MasterTable() {
     } catch (error) {
       console.log(error);
       toast.error("Failed to update master status");
+    }
+  };
+
+  const handleOpenAddMoneyModal = (masterId: number) => {
+    setSelectedMasterId(masterId);
+    setAmount("");
+    setIsAddMoneyModalOpen(true);
+  };
+
+  const handleCloseAddMoneyModal = () => {
+    setIsAddMoneyModalOpen(false);
+    setSelectedMasterId(null);
+    setAmount("");
+  };
+
+  const handleAddMoney = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!selectedMasterId || !amount.trim()) return;
+
+    try {
+      await addMoneyToMaster({
+        master_id: selectedMasterId,
+        amount: amount.trim(),
+      }).unwrap();
+      toast.success("Money added successfully");
+      handleCloseAddMoneyModal();
+    } catch (error: unknown) {
+      let errorMessage = "Failed to add money";
+      if (error && typeof error === "object") {
+        if (
+          "data" in error &&
+          typeof (
+            error as {
+              data?: { message?: string; response?: { message?: string } };
+            }
+          ).data?.message === "string"
+        ) {
+          errorMessage =
+            (
+              error as {
+                data?: { message?: string; response?: { message?: string } };
+              }
+            ).data?.message || errorMessage;
+        } else if (
+          "data" in error &&
+          typeof (
+            error as {
+              data?: { message?: string; response?: { message?: string } };
+            }
+          ).data?.response?.message === "string"
+        ) {
+          errorMessage =
+            (
+              error as {
+                data?: { message?: string; response?: { message?: string } };
+              }
+            ).data?.response?.message || errorMessage;
+        } else if (
+          "message" in error &&
+          typeof (error as { message?: string }).message === "string"
+        ) {
+          errorMessage = (error as { message?: string }).message || errorMessage;
+        }
+      }
+      toast.error(errorMessage);
     }
   };
 
@@ -210,6 +283,28 @@ export default function MasterTable() {
                               </svg>
                             </Link>
 
+                            <button
+                              type="button"
+                              title="Add Money"
+                              onClick={() => handleOpenAddMoneyModal(master.id)}
+                              className="-mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-lg border border-gray-200 text-gray-600 transition-colors hover:border-brand-300 hover:text-brand-500 dark:border-gray-700 dark:text-gray-300"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width={16}
+                                height={16}
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <path d="M12 5v14"></path>
+                                <path d="M5 12h14"></path>
+                              </svg>
+                            </button>
+
                             <Switch
                               checked={master.status === "active"}
                               onClick={() =>
@@ -235,6 +330,48 @@ export default function MasterTable() {
           </div>
         </div>
       </div>
+
+      <Modal
+        isOpen={isAddMoneyModalOpen}
+        onClose={handleCloseAddMoneyModal}
+        className="max-w-[500px] p-6 lg:p-8"
+      >
+        <div>
+          <h3 className="mb-2 text-xl font-semibold text-gray-900 dark:text-white">Add Money</h3>
+          <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
+            Add balance to the selected master.
+          </p>
+
+          <form onSubmit={handleAddMoney} className="space-y-4">
+            <div>
+              <Label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Amount
+              </Label>
+              <Input
+                type="number"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                placeholder="Enter amount"
+                disabled={isAddingMoney}
+              />
+            </div>
+
+            <div className="flex items-center justify-end gap-3 border-t border-gray-200 pt-4 dark:border-gray-700">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleCloseAddMoneyModal}
+                disabled={isAddingMoney}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" variant="primary" disabled={isAddingMoney}>
+                {isAddingMoney ? "Adding..." : "Add Money"}
+              </Button>
+            </div>
+          </form>
+        </div>
+      </Modal>
     </div>
   );
 }
