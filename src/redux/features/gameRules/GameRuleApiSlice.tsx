@@ -1,10 +1,23 @@
 import { appApi } from "@/redux/services/appApi";
 import { DEFAULT_PER_PAGE } from "@/lib/constants";
 
+export type GameRuleFeeType = "room" | "registration" | "winning_commission";
+export type GameRulePayerType = "each_player" | "winner";
+
+export type GameRuleFee = {
+  id?: number;
+  mah_jong_game_rule_id?: number;
+  fee_type: GameRuleFeeType;
+  amount: number;
+  payer_type: GameRulePayerType;
+  created_at?: string;
+  updated_at?: string;
+  deleted_at?: string | null;
+};
+
 export type GameRuleUser = {
   id: number;
   name: string;
-  email: string;
   phone_number: string;
   username: string;
   status: string;
@@ -28,18 +41,18 @@ export type GameRuleGame = {
 export type GameRuleItem = {
   id: number;
   rule_name: string;
-  max_bet_amount: number;
-  min_bet_amount: number;
-  time_per_round: number;
-  user_limit: number;
-  status: "active" | "inactive";
+  match_qty_per_round: number;
+  max_player: number;
+  bet_amount: number;
   game_id: number;
-  created_by: GameRuleUser | null;
-  updated_by: GameRuleUser | null;
+  status?: "active" | "inactive";
   created_at: string;
   updated_at: string;
-  deleted_at: string | null;
-  game: GameRuleGame;
+  deleted_at?: string | null;
+  created_by?: GameRuleUser | null;
+  updated_by?: GameRuleUser | null;
+  game?: GameRuleGame | null;
+  fees?: GameRuleFee[];
 };
 
 export type GameRuleMeta = {
@@ -55,16 +68,15 @@ export type GameRuleResponse = {
     message: string;
   };
   data: GameRuleItem[];
-  meta: GameRuleMeta;
+  meta?: GameRuleMeta;
 };
 
 export type CreateGameRuleRequest = {
   rule_name: string;
-  max_bet_amount: number;
-  min_bet_amount: number;
-  time_per_round: number;
-  game_id: number;
-  user_limit: number;
+  match_qty_per_round: number;
+  max_player: number;
+  bet_amount: number;
+  fees: GameRuleFee[];
 };
 
 export type SingleGameRuleResponse = {
@@ -82,43 +94,51 @@ export const gameRuleApiSlice = appApi.injectEndpoints({
         const params = new URLSearchParams();
         params.set("page", page.toString());
         params.set("per_page", perPage.toString());
-        return `game-rules/all?${params.toString()}`;
+        return `mah-jong-game-rules/all?${params.toString()}`;
       },
       transformResponse: (response: GameRuleResponse) => response,
       providesTags: () => [{ type: "gameRules" }],
     }),
     getGameRule: build.query<SingleGameRuleResponse, { id: number }>({
-      query: ({ id }) => `game-rules/${id}`,
+      query: ({ id }) => `mah-jong-game-rules/${id}`,
       transformResponse: (response: SingleGameRuleResponse) => response,
       providesTags: (_result, _error, { id }) => [{ type: "gameRules", id }],
     }),
-    toggleGameRuleStatus: build.mutation<GameRuleResponse, { id: number; deactivate: boolean }>({
+    toggleGameRuleStatus: build.mutation<
+      SingleGameRuleResponse,
+      { id: number; deactivate: boolean }
+    >({
       query: ({ id, deactivate }) => ({
-        url: `game-rules/${id}/toggle-status`,
+        url: `mah-jong-game-rules/${id}/toggle-status`,
         method: "PATCH",
         body: { deactivate },
-      }),
-      invalidatesTags: () => [{ type: "gameRules" }],
-    }),
-    createGameRule: build.mutation<GameRuleResponse, CreateGameRuleRequest>({
-      query: (body) => ({
-        url: "game-rules",
-        method: "POST",
-        body,
-      }),
-      invalidatesTags: () => [{ type: "gameRules" }],
-    }),
-    updateGameRule: build.mutation<GameRuleResponse, CreateGameRuleRequest & { id: number }>({
-      query: ({ id, ...body }) => ({
-        url: `game-rules/${id}`,
-        method: "PUT",
-        body,
       }),
       invalidatesTags: (_result, _error, { id }) => [
         { type: "gameRules" },
         { type: "gameRules", id },
       ],
     }),
+    createGameRule: build.mutation<SingleGameRuleResponse, CreateGameRuleRequest>({
+      query: (body) => ({
+        url: "mah-jong-game-rules",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: () => [{ type: "gameRules" }],
+    }),
+    updateGameRule: build.mutation<SingleGameRuleResponse, CreateGameRuleRequest & { id: number }>(
+      {
+        query: ({ id, ...body }) => ({
+          url: `mah-jong-game-rules/${id}`,
+          method: "PUT",
+          body,
+        }),
+        invalidatesTags: (_result, _error, { id }) => [
+          { type: "gameRules" },
+          { type: "gameRules", id },
+        ],
+      }
+    ),
   }),
 });
 

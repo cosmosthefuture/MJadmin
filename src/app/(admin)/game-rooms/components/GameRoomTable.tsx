@@ -70,8 +70,8 @@ export default function GameRoomTable() {
   const gameRuleOptions = useMemo(() => {
     const rules = gameRulesData?.data ?? [];
     return rules
-      .filter((rule) => rule.status === "active")
-      .filter((rule) => !formValues.game_id || rule.game_id.toString() === formValues.game_id)
+      .filter((rule) => !rule.status || rule.status === "active")
+      .filter((rule) => !formValues.game_id || String(rule.game_id) === formValues.game_id)
       .map((rule) => ({
         value: rule.id.toString(),
         label: rule.rule_name,

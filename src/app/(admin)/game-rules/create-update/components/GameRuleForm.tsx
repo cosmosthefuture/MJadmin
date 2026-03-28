@@ -5,22 +5,40 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import Input from "@/components/form/input/InputField";
 import Button from "@/components/ui/button/Button";
-import Select from "@/components/form/Select";
 import { toast } from "sonner";
 import {
+  GameRuleFeeType,
+  GameRulePayerType,
   useCreateGameRuleMutation,
   useGetGameRuleQuery,
   useUpdateGameRuleMutation,
 } from "@/redux/features/gameRules/GameRuleApiSlice";
-import { useGetGamesQuery } from "@/redux/features/game/GameApiSlice";
+
+type FeeFormValue = {
+  fee_type: GameRuleFeeType;
+  amount: number;
+  payer_type: GameRulePayerType;
+};
 
 type FormValues = {
   rule_name: string;
-  max_bet_amount: number;
-  min_bet_amount: number;
-  time_per_round: number;
-  game_id: number;
-  user_limit: number;
+  match_qty_per_round: number;
+  max_player: number;
+  bet_amount: number;
+  fees: [FeeFormValue, FeeFormValue, FeeFormValue];
+};
+
+const defaultFees: [FeeFormValue, FeeFormValue, FeeFormValue] = [
+  { fee_type: "room", amount: 0, payer_type: "each_player" },
+  { fee_type: "registration", amount: 0, payer_type: "winner" },
+  { fee_type: "winning_commission", amount: 0, payer_type: "winner" },
+];
+const feeIndexes = [0, 1, 2] as const;
+
+const feeLabels: Record<GameRuleFeeType, string> = {
+  room: "Room Fee",
+  registration: "Registration Fee",
+  winning_commission: "Winning Commission",
 };
 
 export default function GameRuleForm() {
@@ -30,11 +48,6 @@ export default function GameRuleForm() {
   const ruleIdNum = ruleId ? Number(ruleId) : null;
   const [createGameRule, { isLoading }] = useCreateGameRuleMutation();
   const [updateGameRule, { isLoading: isUpdating }] = useUpdateGameRuleMutation();
-
-  const { data: gamesData, isLoading: isGamesLoading } = useGetGamesQuery({
-    page: 1,
-    perPage: 100,
-  });
 
   const { data: ruleData, isLoading: isRuleLoading } = useGetGameRuleQuery(
     { id: ruleIdNum ?? 0 },
@@ -46,44 +59,46 @@ export default function GameRuleForm() {
     handleSubmit,
     formState: { errors },
     setValue,
-    getValues,
   } = useForm<FormValues>({
     defaultValues: {
       rule_name: "",
-      max_bet_amount: undefined as unknown as number,
-      min_bet_amount: undefined as unknown as number,
-      time_per_round: undefined as unknown as number,
-      game_id: undefined as unknown as number,
-      user_limit: undefined as unknown as number,
+      match_qty_per_round: undefined as unknown as number,
+      max_player: undefined as unknown as number,
+      bet_amount: undefined as unknown as number,
+      fees: defaultFees,
     },
   });
 
   useEffect(() => {
-    if (gamesData?.data?.length && !getValues("game_id")) {
-      setValue("game_id", gamesData.data[0].id);
-    }
-  }, [gamesData, getValues, setValue]);
+    if (!ruleData?.data) return;
 
-  useEffect(() => {
-    if (ruleData?.data) {
-      const rule = ruleData.data;
-      setValue("rule_name", rule.rule_name);
-      setValue("max_bet_amount", rule.max_bet_amount);
-      setValue("min_bet_amount", rule.min_bet_amount);
-      setValue("time_per_round", rule.time_per_round);
-      setValue("game_id", rule.game_id);
-      setValue("user_limit", rule.user_limit);
-    }
+    const rule = ruleData.data;
+    setValue("rule_name", rule.rule_name);
+    setValue("match_qty_per_round", rule.match_qty_per_round);
+    setValue("max_player", rule.max_player);
+    setValue("bet_amount", rule.bet_amount);
+
+    feeIndexes.forEach((index) => {
+      const defaultFee = defaultFees[index];
+      const fee =
+        rule.fees?.find((item) => item.fee_type === defaultFee.fee_type) ?? defaultFee;
+      setValue(`fees.${index}.fee_type`, defaultFee.fee_type);
+      setValue(`fees.${index}.amount`, fee.amount);
+      setValue(`fees.${index}.payer_type`, fee.payer_type);
+    });
   }, [ruleData, setValue]);
 
   const onSubmit = async (values: FormValues) => {
     const payload = {
-      rule_name: values.rule_name,
-      max_bet_amount: Number(values.max_bet_amount),
-      min_bet_amount: Number(values.min_bet_amount),
-      time_per_round: Number(values.time_per_round),
-      game_id: Number(values.game_id),
-      user_limit: Number(values.user_limit),
+      rule_name: values.rule_name.trim(),
+      match_qty_per_round: Number(values.match_qty_per_round),
+      max_player: Number(values.max_player),
+      bet_amount: Number(values.bet_amount),
+      fees: values.fees.map((fee) => ({
+        fee_type: fee.fee_type,
+        amount: Number(fee.amount),
+        payer_type: fee.payer_type,
+      })),
     };
 
     try {
@@ -98,7 +113,10 @@ export default function GameRuleForm() {
     } catch (error: unknown) {
       const message =
         error && typeof error === "object" && "data" in error
-          ? (error as { data?: { message?: string } }).data?.message
+          ? (error as { data?: { message?: string; response?: { message?: string } } }).data
+              ?.message ||
+            (error as { data?: { message?: string; response?: { message?: string } } }).data
+              ?.response?.message
           : "Failed to save rule";
       toast.error(message ?? "Failed to save rule");
     }
@@ -107,96 +125,127 @@ export default function GameRuleForm() {
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-white/[0.05] dark:bg-white/[0.03]">
       <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-        {ruleIdNum ? "Update Game Rule" : "Create Game Rule"}
+        {ruleIdNum ? "Update Mah Jong Rule" : "Create Mah Jong Rule"}
       </h2>
-      <p className="mt-1 text-sm text-gray-500">Define betting limits and timing for a game.</p>
+      <p className="mt-1 text-sm text-gray-500">
+        Configure base rule values and fee collection for Mah Jong rooms.
+      </p>
 
-      <form className="mt-6 space-y-4" onSubmit={handleSubmit(onSubmit)}>
+      <form className="mt-6 space-y-6" onSubmit={handleSubmit(onSubmit)}>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700">Rule Name</label>
-            <Input placeholder="Rule name" {...register("rule_name", { required: "Required" })} />
+            <Input placeholder="Rule Four" {...register("rule_name", { required: "Required" })} />
             {errors.rule_name && (
               <p className="mt-1 text-xs text-red-500">{errors.rule_name.message}</p>
             )}
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">Game</label>
-            <Select
-              disabled={isGamesLoading || Boolean(ruleIdNum)}
-              placeholder={isGamesLoading ? "Loading games..." : "Select game"}
-              options={(gamesData?.data ?? []).map((game) => ({
-                value: game.id.toString(),
-                label: game.name,
-              }))}
-              {...register("game_id", { required: "Game is required", valueAsNumber: true })}
-            />
-            {errors.game_id && (
-              <p className="mt-1 text-xs text-red-500">{errors.game_id.message}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">Min Bet Amount</label>
-            <Input
-              type="number"
-              placeholder="5000"
-              {...register("min_bet_amount", {
-                required: "Required",
-                min: { value: 0, message: "Must be >= 0" },
-              })}
-            />
-            {errors.min_bet_amount && (
-              <p className="mt-1 text-xs text-red-500">{errors.min_bet_amount.message}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">Max Bet Amount</label>
-            <Input
-              type="number"
-              placeholder="30000"
-              {...register("max_bet_amount", {
-                required: "Required",
-                min: { value: 0, message: "Must be >= 0" },
-              })}
-            />
-            {errors.max_bet_amount && (
-              <p className="mt-1 text-xs text-red-500">{errors.max_bet_amount.message}</p>
-            )}
-          </div>
-
-          <div>
             <label className="mb-1 block text-sm font-medium text-gray-700">
-              Time per Round (seconds)
+              Match Quantity Per Round
             </label>
             <Input
               type="number"
-              placeholder="30"
-              {...register("time_per_round", {
+              placeholder="4"
+              {...register("match_qty_per_round", {
                 required: "Required",
+                valueAsNumber: true,
                 min: { value: 1, message: "Must be >= 1" },
               })}
             />
-            {errors.time_per_round && (
-              <p className="mt-1 text-xs text-red-500">{errors.time_per_round.message}</p>
+            {errors.match_qty_per_round && (
+              <p className="mt-1 text-xs text-red-500">{errors.match_qty_per_round.message}</p>
             )}
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">User Limit</label>
+            <label className="mb-1 block text-sm font-medium text-gray-700">Max Player</label>
             <Input
               type="number"
-              placeholder="5"
-              {...register("user_limit", {
+              placeholder="4"
+              {...register("max_player", {
                 required: "Required",
+                valueAsNumber: true,
                 min: { value: 1, message: "Must be >= 1" },
               })}
             />
-            {errors.user_limit && (
-              <p className="mt-1 text-xs text-red-500">{errors.user_limit.message}</p>
+            {errors.max_player && (
+              <p className="mt-1 text-xs text-red-500">{errors.max_player.message}</p>
             )}
+          </div>
+
+          <div>
+            <label className="mb-1 block text-sm font-medium text-gray-700">Bet Amount</label>
+            <Input
+              type="number"
+              placeholder="5000"
+              {...register("bet_amount", {
+                required: "Required",
+                valueAsNumber: true,
+                min: { value: 0, message: "Must be >= 0" },
+              })}
+            />
+            {errors.bet_amount && (
+              <p className="mt-1 text-xs text-red-500">{errors.bet_amount.message}</p>
+            )}
+          </div>
+        </div>
+
+        <div className="rounded-lg border border-gray-200 p-4 dark:border-white/[0.05]">
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Fees</h3>
+          <div className="mt-4 space-y-4">
+            {feeIndexes.map((index) => {
+              const fee = defaultFees[index];
+              return (
+              <div
+                key={fee.fee_type}
+                className="grid grid-cols-1 gap-4 rounded-lg border border-gray-100 p-4 md:grid-cols-3 dark:border-white/[0.05]"
+              >
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-gray-700">Fee Type</label>
+                  <Input value={feeLabels[fee.fee_type]} disabled />
+                  <input type="hidden" {...register(`fees.${index}.fee_type`)} />
+                </div>
+
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-gray-700">Amount</label>
+                  <Input
+                    type="number"
+                    placeholder="0"
+                    {...register(`fees.${index}.amount`, {
+                      required: "Required",
+                      valueAsNumber: true,
+                      min: { value: 0, message: "Must be >= 0" },
+                    })}
+                  />
+                  {errors.fees?.[index]?.amount && (
+                    <p className="mt-1 text-xs text-red-500">
+                      {errors.fees[index]?.amount?.message}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-gray-700">
+                    Payer Type
+                  </label>
+                  <select
+                    className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+                    {...register(`fees.${index}.payer_type`, { required: "Required" })}
+                  >
+                    <option value="each_player">Each Player</option>
+                    <option value="winner">Winner</option>
+                  </select>
+                  {errors.fees?.[index]?.payer_type && (
+                    <p className="mt-1 text-xs text-red-500">
+                      {errors.fees[index]?.payer_type?.message}
+                    </p>
+                  )}
+                </div>
+              </div>
+              );
+            })}
           </div>
         </div>
 
@@ -204,10 +253,7 @@ export default function GameRuleForm() {
           <Button type="button" variant="outline" onClick={() => router.push("/game-rules")}>
             Cancel
           </Button>
-          <Button
-            type="submit"
-            disabled={isLoading || isUpdating || isGamesLoading || isRuleLoading}
-          >
+          <Button type="submit" disabled={isLoading || isUpdating || isRuleLoading}>
             {isLoading || isUpdating ? "Saving..." : isRuleLoading ? "Loading..." : "Save Rule"}
           </Button>
         </div>
