@@ -151,7 +151,7 @@ export default function AdminAgentsTable() {
                       {agent.agent_code || "—"}
                     </TableCell>
                     <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
-                      {agent.incentive_percentage}
+                      {agent.winning_commission_percentage ?? agent.incentive_percentage ?? "—"}
                     </TableCell>
                     <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
                       <span

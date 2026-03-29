@@ -7,7 +7,8 @@ export type AdminAgentItem = {
   phone_number: string;
   username: string;
   agent_code: string;
-  incentive_percentage: number;
+  winning_commission_percentage?: number;
+  incentive_percentage?: number;
   master_id: number;
   status: string;
   force_reset_password: boolean;
