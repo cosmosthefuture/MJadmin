@@ -8,8 +8,6 @@ import {
   useVerifyUserMutation,
   useResetPasswordMutation,
 } from "@/redux/features/user/UserApiSlice";
-import { useManualCreateDepositMutation } from "@/redux/features/deposit/DepositApiSlice";
-import { useManualCreateWithdrawMutation } from "@/redux/features/withdraw/WithdrawApiSlice";
 import Pagination from "@/components/tables/Pagination";
 import { Switch } from "@/components/ui/switch";
 import Loading from "@/components/common/Loading";
@@ -51,77 +49,13 @@ export default function UserTable() {
   const [toggleUser] = useToggleUserMutation();
   const [verifyUser, { isLoading: isVerifying }] = useVerifyUserMutation();
   const [resetPassword, { isLoading: isResetting }] = useResetPasswordMutation();
-  const [manualCreateDeposit, { isLoading: isDepositing }] = useManualCreateDepositMutation();
-  const [manualCreateWithdraw, { isLoading: isWithdrawing }] = useManualCreateWithdrawMutation();
   const verifyModal = useModal();
   const resetPasswordModal = useModal();
-  const manualTransactionModal = useModal();
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [resetPasswordInput, setResetPasswordInput] = useState("");
   const [resetPasswordConfirmationInput, setResetPasswordConfirmationInput] = useState("");
-
-  const [transactionType, setTransactionType] = useState<"deposit" | "withdraw">("deposit");
-  const [amount, setAmount] = useState<number | "">("");
-  const [transactionPassword, setTransactionPassword] = useState("");
-
-  const handleOpenManualTransactionModal = (userId: number, type: "deposit" | "withdraw") => {
-    setSelectedUserId(userId);
-    setTransactionType(type);
-    setAmount("");
-    setTransactionPassword("");
-    manualTransactionModal.openModal();
-  };
-
-  const handleCloseManualTransactionModal = () => {
-    manualTransactionModal.closeModal();
-    setSelectedUserId(null);
-    setAmount("");
-    setTransactionPassword("");
-  };
-
-  const handleManualTransaction = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!selectedUserId || !amount || !transactionPassword) return;
-
-    try {
-      if (transactionType === "deposit") {
-        await manualCreateDeposit({
-          user_id: selectedUserId,
-          amount: Number(amount),
-          password: transactionPassword,
-        }).unwrap();
-        toast.success("Manual deposit created successfully");
-      } else {
-        await manualCreateWithdraw({
-          user_id: selectedUserId,
-          amount: Number(amount),
-          password: transactionPassword,
-        }).unwrap();
-        toast.success("Manual withdraw created successfully");
-      }
-      handleCloseManualTransactionModal();
-    } catch (error: unknown) {
-      console.error("Error:", error);
-      let errorMessage = "Failed to create transaction";
-      if (error && typeof error === "object") {
-        if (
-          "data" in error &&
-          typeof (error as { data?: { message?: string } }).data?.message === "string"
-        ) {
-          errorMessage = (error as { data?: { message?: string } }).data?.message || errorMessage;
-        } else if (
-          "message" in error &&
-          typeof (error as { message?: string }).message === "string"
-        ) {
-          errorMessage = (error as { message?: string }).message || errorMessage;
-        }
-      }
-      toast.error(errorMessage);
-    }
-  };
 
   const handleOpenResetPasswordModal = (userId: number) => {
     setSelectedUserId(userId);
@@ -438,6 +372,7 @@ export default function UserTable() {
                                 </svg>
                               </button>
 
+                              {/*
                               <button
                                 type="button"
                                 onClick={() => handleOpenManualTransactionModal(user.id, "deposit")}
@@ -455,6 +390,7 @@ export default function UserTable() {
                               >
                                 Withdraw
                               </button>
+                              */}
 
                               <Switch
                                 checked={user.status === "active"}
@@ -591,70 +527,6 @@ export default function UserTable() {
               </Button>
               <Button type="submit" variant="primary" disabled={isResetting}>
                 {isResetting ? "Resetting..." : "Reset Password"}
-              </Button>
-            </div>
-          </form>
-        </div>
-      </Modal>
-
-      {/* Manual Transaction Modal */}
-      <Modal
-        isOpen={manualTransactionModal.isOpen}
-        onClose={handleCloseManualTransactionModal}
-        className="max-w-[500px] p-6 lg:p-8"
-      >
-        <div>
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-            Manual {transactionType === "deposit" ? "Deposit" : "Withdraw"}
-          </h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
-            Create a manual {transactionType} for the user.
-          </p>
-
-          <form onSubmit={handleManualTransaction} className="space-y-4">
-            <div>
-              <Label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Amount
-              </Label>
-              <Input
-                type="number"
-                value={amount}
-                onChange={(e) => setAmount(Number(e.target.value))}
-                placeholder="Enter amount"
-                disabled={isDepositing || isWithdrawing}
-              />
-            </div>
-
-            <div>
-              <Label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Password
-              </Label>
-              <Input
-                type="password"
-                value={transactionPassword}
-                onChange={(e) => setTransactionPassword(e.target.value)}
-                placeholder="Enter password"
-                disabled={isDepositing || isWithdrawing}
-              />
-            </div>
-
-            <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleCloseManualTransactionModal}
-                disabled={isDepositing || isWithdrawing}
-              >
-                Cancel
-              </Button>
-              <Button type="submit" variant="primary" disabled={isDepositing || isWithdrawing}>
-                {transactionType === "deposit"
-                  ? isDepositing
-                    ? "Depositing..."
-                    : "Create Deposit"
-                  : isWithdrawing
-                    ? "Withdrawing..."
-                    : "Create Withdraw"}
               </Button>
             </div>
           </form>
