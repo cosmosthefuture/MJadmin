@@ -103,6 +103,11 @@ const AppSidebar: React.FC = () => {
         path: "/master/wallet-records",
       });
       items.push({
+        icon: <DownloadIcon size={20} />,
+        name: "Manual Deposits",
+        path: "/master/manual-deposits",
+      });
+      items.push({
         icon: <Banknote size={21} />,
         name: "Daily Cashbook Records",
         path: "/master/daily-cashbook-records",

@@ -178,6 +178,7 @@ export const masterAppApi = createApi({
     "masterDailyWalletSummary",
     "masterDailyCashbookRecords",
     "masterNotifications",
+    "masterAgentDeposits",
   ],
   endpoints: () => ({}),
 });
