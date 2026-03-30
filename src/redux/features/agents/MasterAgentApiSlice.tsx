@@ -18,6 +18,7 @@ export type MasterAgentItem = {
   created_at: string;
   updated_at: string;
   deleted_at: string | null;
+  balance?: string;
   master?: {
     id: number;
     name: string;

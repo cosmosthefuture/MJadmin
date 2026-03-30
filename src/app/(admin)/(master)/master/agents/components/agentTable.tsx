@@ -293,6 +293,12 @@ export default function AgentTable() {
                     isHeader
                     className="px-5 py-3 text-start text-gray-500 font-medium text-theme-xs"
                   >
+                    Balance
+                  </TableCell>
+                  <TableCell
+                    isHeader
+                    className="px-5 py-3 text-start text-gray-500 font-medium text-theme-xs"
+                  >
                     Status
                   </TableCell>
                   <TableCell
@@ -330,6 +336,9 @@ export default function AgentTable() {
                     </TableCell>
                     <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
                       {agent.winning_commission_percentage ?? agent.incentive_percentage ?? "—"}
+                    </TableCell>
+                    <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
+                      {agent.balance ? Number(agent.balance).toLocaleString() : "—"}
                     </TableCell>
                     <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
                       <span
