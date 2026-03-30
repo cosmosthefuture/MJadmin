@@ -88,6 +88,11 @@ export type AddMoneyToAgentPayload = {
   amount: string;
 };
 
+export type WithdrawMoneyFromUserPayload = {
+  user_id: number;
+  amount: string;
+};
+
 export const masterAgentApiSlice = masterAppApi.injectEndpoints({
   endpoints: (build) => ({
     getMasterAgents: build.query<
@@ -155,6 +160,15 @@ export const masterAgentApiSlice = masterAppApi.injectEndpoints({
       invalidatesTags: () => [{ type: "agentsApi" }],
     }),
 
+    withdrawMoneyFromUser: build.mutation<unknown, WithdrawMoneyFromUserPayload>({
+      query: (payload) => ({
+        url: "agents/users/withdraw-money",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: () => [{ type: "agentsApi" }],
+    }),
+
     toggleAgentStatus: build.mutation<unknown, { id: number; deactivate: boolean }>({
       query: ({ id, deactivate }) => ({
         url: `agents/${id}/toggle-status`,
@@ -173,5 +187,6 @@ export const {
   useUpdateAgentMutation,
   useAddMoneyToAgentMutation,
   useWithdrawMoneyFromAgentMutation,
+  useWithdrawMoneyFromUserMutation,
   useToggleAgentStatusMutation,
 } = masterAgentApiSlice;

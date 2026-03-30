@@ -74,6 +74,11 @@ export type AgentAddMoneyPayload = {
   amount: string;
 };
 
+export type AgentWithdrawMoneyPayload = {
+  user_id: number;
+  amount: string;
+};
+
 export const agentUserApiSlice = agentAppApi.injectEndpoints({
   endpoints: (build) => ({
     getAgentUsers: build.query<
@@ -114,19 +119,20 @@ export const agentUserApiSlice = agentAppApi.injectEndpoints({
         { type: "agentUserById", id },
       ],
     }),
-    toggleAgentUserStatus: build.mutation<AgentUserDetailResponse, { id: number; deactivate: boolean }>(
-      {
-        query: ({ id, deactivate }) => ({
-          url: `users/${id}/toggle-status`,
-          method: "PATCH",
-          body: { deactivate },
-        }),
-        invalidatesTags: (_result, _error, { id }) => [
-          { type: "agentUsers" },
-          { type: "agentUserById", id },
-        ],
-      }
-    ),
+    toggleAgentUserStatus: build.mutation<
+      AgentUserDetailResponse,
+      { id: number; deactivate: boolean }
+    >({
+      query: ({ id, deactivate }) => ({
+        url: `users/${id}/toggle-status`,
+        method: "PATCH",
+        body: { deactivate },
+      }),
+      invalidatesTags: (_result, _error, { id }) => [
+        { type: "agentUsers" },
+        { type: "agentUserById", id },
+      ],
+    }),
     verifyAgentUser: build.mutation<AgentUserDetailResponse, AgentVerifyUserPayload>({
       query: ({ id, password, password_confirmation }) => ({
         url: `users/${id}/verify`,
@@ -160,6 +166,14 @@ export const agentUserApiSlice = agentAppApi.injectEndpoints({
       }),
       invalidatesTags: () => [{ type: "agentUsers" }],
     }),
+    withdrawMoneyFromAgentUser: build.mutation<AgentUserDetailResponse, AgentWithdrawMoneyPayload>({
+      query: (body) => ({
+        url: "users/withdraw-money",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: () => [{ type: "agentUsers" }],
+    }),
   }),
 });
 
@@ -172,4 +186,5 @@ export const {
   useVerifyAgentUserMutation,
   useResetAgentUserPasswordMutation,
   useAddMoneyToAgentUserMutation,
+  useWithdrawMoneyFromAgentUserMutation,
 } = agentUserApiSlice;
