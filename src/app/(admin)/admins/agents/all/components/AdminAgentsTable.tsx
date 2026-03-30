@@ -120,6 +120,12 @@ export default function AdminAgentsTable() {
                     isHeader
                     className="px-5 py-3 text-start text-gray-500 font-medium text-theme-xs"
                   >
+                    Balance
+                  </TableCell>
+                  <TableCell
+                    isHeader
+                    className="px-5 py-3 text-start text-gray-500 font-medium text-theme-xs"
+                  >
                     Status
                   </TableCell>
                   <TableCell
@@ -135,8 +141,7 @@ export default function AdminAgentsTable() {
                 {agents.map((agent, index) => (
                   <TableRow key={agent.id}>
                     <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
-                      {(currentPage - 1) * perPage + index + 1
-                      }
+                      {(currentPage - 1) * perPage + index + 1}
                     </TableCell>
                     <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
                       {agent.name}
@@ -152,6 +157,9 @@ export default function AdminAgentsTable() {
                     </TableCell>
                     <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
                       {agent.winning_commission_percentage ?? agent.incentive_percentage ?? "—"}
+                    </TableCell>
+                    <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
+                      {agent.balance ? Number(agent.balance).toLocaleString() : "—"}
                     </TableCell>
                     <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
                       <span
