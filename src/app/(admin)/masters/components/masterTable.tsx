@@ -205,6 +205,12 @@ export default function MasterTable() {
                     isHeader
                     className="px-5 py-3 text-start text-gray-500 font-medium text-theme-xs"
                   >
+                    Balance
+                  </TableCell>
+                  <TableCell
+                    isHeader
+                    className="px-5 py-3 text-start text-gray-500 font-medium text-theme-xs"
+                  >
                     Status
                   </TableCell>
                   <TableCell
@@ -245,6 +251,9 @@ export default function MasterTable() {
                       </TableCell>
                       <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
                         {master.incentive_percentage ?? master.winning_commission_percentage ?? "—"}
+                      </TableCell>
+                      <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
+                        {master.balance ? Number(master.balance).toLocaleString() : "—"}
                       </TableCell>
                       <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
                         <span

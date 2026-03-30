@@ -16,6 +16,7 @@ export type MasterItem = {
   created_at: string;
   updated_at: string;
   deleted_at: string | null;
+  balance?: string;
 };
 
 export type MasterMeta = {
