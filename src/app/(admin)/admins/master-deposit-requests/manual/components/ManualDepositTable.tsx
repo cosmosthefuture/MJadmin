@@ -40,7 +40,7 @@ export default function ManualDepositTable() {
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
       <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-white/[0.05]">
         <h3 className="text-base font-semibold text-gray-900 dark:text-white">
-          User Manual Deposit Requests
+          Master Manual Deposit Requests
         </h3>
         <div className="w-full max-w-xs">
           <Input
@@ -82,7 +82,7 @@ export default function ManualDepositTable() {
                       isHeader
                       className="px-5 py-3 text-start text-gray-500 font-medium text-theme-xs"
                     >
-                      User
+                      Master
                     </TableCell>
                     <TableCell
                       isHeader
@@ -100,7 +100,13 @@ export default function ManualDepositTable() {
                       isHeader
                       className="px-5 py-3 text-start text-gray-500 font-medium text-theme-xs"
                     >
-                      Created At
+                      Action By
+                    </TableCell>
+                    <TableCell
+                      isHeader
+                      className="px-5 py-3 text-start text-gray-500 font-medium text-theme-xs"
+                    >
+                      Date Time
                     </TableCell>
                   </TableRow>
                 </TableHeader>
@@ -111,17 +117,20 @@ export default function ManualDepositTable() {
                         {(currentPage - 1) * perPage + index + 1}
                       </TableCell>
                       <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
-                        {deposit.user?.name ?? "-"}
+                        {deposit.master?.name ?? "-"}
                       </TableCell>
                       <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
-                        {deposit.user?.phone_number ?? "-"}
+                        {deposit.master?.phone_number ?? "-"}
                       </TableCell>
                       <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
                         {deposit.amount}
                       </TableCell>
                       <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
-                        {deposit.created_at
-                          ? moment(deposit.created_at).format("DD/MM/YYYY HH:mm:ss")
+                        {deposit.action_by?.name ?? "-"}
+                      </TableCell>
+                      <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
+                        {deposit.date_time
+                          ? moment(deposit.date_time).format("DD/MM/YYYY HH:mm:ss")
                           : "-"}
                       </TableCell>
                     </TableRow>

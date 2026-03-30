@@ -65,6 +65,58 @@ export type UpdateDepositStatusRequest = {
   reason_for_rejection?: string | null;
 };
 
+export type MasterDepositActionBy = {
+  id: number;
+  name: string;
+  phone_number: string;
+  username: string;
+  status: string;
+  force_reset_password: boolean;
+  last_logined: string;
+  email_verified_at: string | null;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+};
+
+export type MasterDepositMaster = {
+  id: number;
+  name: string;
+  phone_number: string;
+  username: string;
+  winning_commission_percentage: number;
+  status: string;
+  force_reset_password: boolean;
+  is_default: number;
+  last_logined: string;
+  email_verified_at: string | null;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+  balance: string;
+};
+
+export type MasterDepositItem = {
+  id: number;
+  master_id: number;
+  amount: number;
+  action_by: MasterDepositActionBy;
+  date_time: string;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+  master: MasterDepositMaster;
+};
+
+export type MasterDepositResponse = {
+  response: {
+    status: string;
+    message: string;
+  };
+  data: MasterDepositItem[];
+  meta: DepositMeta;
+};
+
 export const depositApiSlice = appApi.injectEndpoints({
   endpoints: (build) => ({
     getDepositRequests: build.query<
@@ -83,7 +135,7 @@ export const depositApiSlice = appApi.injectEndpoints({
       keepUnusedDataFor: 0, // Do not keep cached data when not in use
     }),
     getManualDepositRequests: build.query<
-      DepositResponse,
+      MasterDepositResponse,
       { page?: number; perPage?: number; search?: string }
     >({
       query: ({ page = 1, perPage = DEFAULT_PER_PAGE, search } = {}) => {
@@ -91,11 +143,11 @@ export const depositApiSlice = appApi.injectEndpoints({
         params.set("page", page.toString());
         params.set("per_page", perPage.toString());
         if (search) params.set("search", search);
-        return `master-deposit-requests/manual?${params.toString()}`;
+        return `masters/deposit-lists?${params.toString()}`;
       },
-      transformResponse: (response: DepositResponse) => response,
+      transformResponse: (response: MasterDepositResponse) => response,
       providesTags: () => [{ type: "depositRequests" }],
-      keepUnusedDataFor: 0, // Do not keep cached data when not in use
+      keepUnusedDataFor: 0,
     }),
     approveDepositRequest: build.mutation<DepositResponse, { id: number }>({
       query: ({ id }) => ({
