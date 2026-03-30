@@ -212,7 +212,7 @@ const AppSidebar: React.FC = () => {
       items.push({
         icon: <DownloadIcon size={20} />,
         name: "Manual Deposits",
-        path: "/admins/user-deposit-requests/manual",
+        path: "/admins/master-deposit-requests/manual",
       });
       items.push({
         icon: <PaperPlaneIcon size={20} />,

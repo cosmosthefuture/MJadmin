@@ -91,7 +91,7 @@ export const depositApiSlice = appApi.injectEndpoints({
         params.set("page", page.toString());
         params.set("per_page", perPage.toString());
         if (search) params.set("search", search);
-        return `user-deposit-requests/manual?${params.toString()}`;
+        return `master-deposit-requests/manual?${params.toString()}`;
       },
       transformResponse: (response: DepositResponse) => response,
       providesTags: () => [{ type: "depositRequests" }],
