@@ -6,6 +6,7 @@ import {
   useAddMoneyToAgentMutation,
   useGetMasterAgentsQuery,
   useToggleAgentStatusMutation,
+  useWithdrawMoneyFromAgentMutation,
 } from "@/redux/features/agents/MasterAgentApiSlice";
 import Pagination from "@/components/tables/Pagination";
 import Loading from "@/components/common/Loading";
@@ -31,10 +32,13 @@ export default function AgentTable() {
 
   const [toggleAgentStatus] = useToggleAgentStatusMutation();
   const [addMoneyToAgent, { isLoading: isAddingMoney }] = useAddMoneyToAgentMutation();
+  const [withdrawMoneyFromAgent, { isLoading: isWithdrawing }] =
+    useWithdrawMoneyFromAgentMutation();
 
   const [searchText, setSearchText] = useState("");
   const debouncedSearchText = useDebounce(searchText);
   const [isAddMoneyModalOpen, setIsAddMoneyModalOpen] = useState(false);
+  const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
   const [selectedAgentId, setSelectedAgentId] = useState<number | null>(null);
   const [amount, setAmount] = useState("");
 
@@ -81,6 +85,18 @@ export default function AgentTable() {
     setAmount("");
   };
 
+  const handleOpenWithdrawModal = (agentId: number) => {
+    setSelectedAgentId(agentId);
+    setAmount("");
+    setIsWithdrawModalOpen(true);
+  };
+
+  const handleCloseWithdrawModal = () => {
+    setIsWithdrawModalOpen(false);
+    setSelectedAgentId(null);
+    setAmount("");
+  };
+
   const handleAddMoney = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -98,12 +114,11 @@ export default function AgentTable() {
       if (error && typeof error === "object") {
         if (
           "data" in error &&
-          typeof
-            (
-              error as {
-                data?: { message?: string; response?: { message?: string } };
-              }
-            ).data?.message === "string"
+          typeof (
+            error as {
+              data?: { message?: string; response?: { message?: string } };
+            }
+          ).data?.message === "string"
         ) {
           errorMessage =
             (
@@ -113,12 +128,65 @@ export default function AgentTable() {
             ).data?.message || errorMessage;
         } else if (
           "data" in error &&
-          typeof
+          typeof (
+            error as {
+              data?: { message?: string; response?: { message?: string } };
+            }
+          ).data?.response?.message === "string"
+        ) {
+          errorMessage =
             (
               error as {
                 data?: { message?: string; response?: { message?: string } };
               }
-            ).data?.response?.message === "string"
+            ).data?.response?.message || errorMessage;
+        } else if (
+          "message" in error &&
+          typeof (error as { message?: string }).message === "string"
+        ) {
+          errorMessage = (error as { message?: string }).message || errorMessage;
+        }
+      }
+      toast.error(errorMessage);
+    }
+  };
+
+  const handleWithdraw = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!selectedAgentId || !amount.trim()) return;
+
+    try {
+      await withdrawMoneyFromAgent({
+        agent_id: selectedAgentId,
+        amount: amount.trim(),
+      }).unwrap();
+      toast.success("Money withdrawn successfully");
+      handleCloseWithdrawModal();
+    } catch (error: unknown) {
+      let errorMessage = "Failed to withdraw money";
+      if (error && typeof error === "object") {
+        if (
+          "data" in error &&
+          typeof (
+            error as {
+              data?: { message?: string; response?: { message?: string } };
+            }
+          ).data?.message === "string"
+        ) {
+          errorMessage =
+            (
+              error as {
+                data?: { message?: string; response?: { message?: string } };
+              }
+            ).data?.message || errorMessage;
+        } else if (
+          "data" in error &&
+          typeof (
+            error as {
+              data?: { message?: string; response?: { message?: string } };
+            }
+          ).data?.response?.message === "string"
         ) {
           errorMessage =
             (
@@ -321,6 +389,27 @@ export default function AgentTable() {
                           </svg>
                         </button>
 
+                        <button
+                          type="button"
+                          title="Withdraw"
+                          onClick={() => handleOpenWithdrawModal(agent.id)}
+                          className="-mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-lg border border-gray-200 text-gray-600 transition-colors hover:border-red-300 hover:text-red-500 dark:border-gray-700 dark:text-gray-300"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width={16}
+                            height={16}
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M5 12h14"></path>
+                          </svg>
+                        </button>
+
                         <Switch
                           checked={agent.status === "active"}
                           onClick={() => handleToggleActive(agent.id, agent.status === "active")}
@@ -379,6 +468,50 @@ export default function AgentTable() {
               </Button>
               <Button type="submit" variant="primary" disabled={isAddingMoney}>
                 {isAddingMoney ? "Adding..." : "Add Money"}
+              </Button>
+            </div>
+          </form>
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={isWithdrawModalOpen}
+        onClose={handleCloseWithdrawModal}
+        className="max-w-[500px] p-6 lg:p-8"
+      >
+        <div>
+          <h3 className="mb-2 text-xl font-semibold text-gray-900 dark:text-white">
+            Withdraw Money
+          </h3>
+          <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
+            Withdraw balance from the selected agent.
+          </p>
+
+          <form onSubmit={handleWithdraw} className="space-y-4">
+            <div>
+              <Label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Amount
+              </Label>
+              <Input
+                type="number"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                placeholder="Enter amount"
+                disabled={isWithdrawing}
+              />
+            </div>
+
+            <div className="flex items-center justify-end gap-3 border-t border-gray-200 pt-4 dark:border-gray-700">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleCloseWithdrawModal}
+                disabled={isWithdrawing}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" variant="primary" disabled={isWithdrawing}>
+                {isWithdrawing ? "Withdrawing..." : "Withdraw"}
               </Button>
             </div>
           </form>
