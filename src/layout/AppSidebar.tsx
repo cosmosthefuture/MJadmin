@@ -217,7 +217,7 @@ const AppSidebar: React.FC = () => {
       items.push({
         icon: <PaperPlaneIcon size={20} />,
         name: "Manual Withdraws",
-        path: "/admins/user-withdraw-requests/manual",
+        path: "/admins/master-withdraw-requests/manual",
       });
     }
     if (hadMasterWithdrawRequestViewPermission) {

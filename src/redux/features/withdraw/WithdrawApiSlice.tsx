@@ -85,7 +85,7 @@ export const withdrawApiSlice = appApi.injectEndpoints({
         params.set("page", page.toString());
         params.set("per_page", perPage.toString());
         if (search) params.set("search", search);
-        return `user-withdraw-requests/manual?${params.toString()}`;
+        return `master-withdraw-requests/manual?${params.toString()}`;
       },
       transformResponse: (response: WithdrawResponse) => response,
       providesTags: () => [{ type: "withdrawRequests" }],
