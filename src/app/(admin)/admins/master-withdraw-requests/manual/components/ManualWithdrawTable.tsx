@@ -40,7 +40,7 @@ export default function ManualWithdrawTable() {
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
       <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-white/[0.05]">
         <h3 className="text-base font-semibold text-gray-900 dark:text-white">
-          User Manual Withdraw Requests
+          Master Manual Withdraw Requests
         </h3>
         <div className="w-full max-w-xs">
           <Input
@@ -82,7 +82,7 @@ export default function ManualWithdrawTable() {
                       isHeader
                       className="px-5 py-3 text-start text-gray-500 font-medium text-theme-xs"
                     >
-                      User
+                      Master
                     </TableCell>
                     <TableCell
                       isHeader
@@ -106,7 +106,7 @@ export default function ManualWithdrawTable() {
                       isHeader
                       className="px-5 py-3 text-start text-gray-500 font-medium text-theme-xs"
                     >
-                      Created At
+                      Date Time
                     </TableCell>
                   </TableRow>
                 </TableHeader>
@@ -117,22 +117,20 @@ export default function ManualWithdrawTable() {
                         {(currentPage - 1) * perPage + index + 1}
                       </TableCell>
                       <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
-                        {withdraw.user?.name ?? "-"}
+                        {withdraw.master?.name ?? "-"}
                       </TableCell>
                       <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
-                        {withdraw.user?.phone_number ?? "-"}
+                        {withdraw.master?.phone_number ?? "-"}
                       </TableCell>
                       <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
                         {withdraw.amount}
                       </TableCell>
                       <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
-                        {withdraw.action_by && typeof withdraw.action_by === "object"
-                          ? withdraw.action_by.name
-                          : "-"}
+                        {withdraw.action_by?.name ?? "-"}
                       </TableCell>
                       <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
-                        {withdraw.created_at
-                          ? moment(withdraw.created_at).format("DD/MM/YYYY HH:mm:ss")
+                        {withdraw.date_time
+                          ? moment(withdraw.date_time).format("DD/MM/YYYY HH:mm:ss")
                           : "-"}
                       </TableCell>
                     </TableRow>
