@@ -130,6 +130,15 @@ export const masterApiSlice = appApi.injectEndpoints({
       invalidatesTags: () => [{ type: "mastersApi" }],
     }),
 
+    withdrawMoneyFromMaster: build.mutation<CreateMasterResponse, AddMoneyToMasterPayload>({
+      query: (payload) => ({
+        url: "masters/withdraw-money",
+        method: "POST",
+        body: payload,
+      }),
+      invalidatesTags: () => [{ type: "mastersApi" }],
+    }),
+
     toggleMasterStatus: build.mutation<
       CreateMasterResponse,
       {
@@ -153,5 +162,6 @@ export const {
   useCreateMasterMutation,
   useUpdateMasterMutation,
   useAddMoneyToMasterMutation,
+  useWithdrawMoneyFromMasterMutation,
   useToggleMasterStatusMutation,
 } = masterApiSlice;
