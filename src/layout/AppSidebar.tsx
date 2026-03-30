@@ -139,6 +139,17 @@ const AppSidebar: React.FC = () => {
       });
 
       items.push({
+        icon: <DownloadIcon size={20} />,
+        name: "Manual Deposits",
+        path: "/agents/manual-deposits",
+      });
+      items.push({
+        icon: <PaperPlaneIcon size={20} />,
+        name: "Manual Withdrawals",
+        path: "/agents/manual-withdrawals",
+      });
+
+      items.push({
         icon: <HandCoins size={21} />,
         name: "Daily Wallet Summary",
         path: "/agents/daily-wallet-summary",

@@ -195,6 +195,8 @@ export const agentAppApi = createApi({
     "agentWithdrawHistory",
     "agentDailyCashbookRecords",
     "agentNotifications",
+    "agentUserDeposits",
+    "agentUserWithdraws",
   ],
   endpoints: () => ({}),
 });
