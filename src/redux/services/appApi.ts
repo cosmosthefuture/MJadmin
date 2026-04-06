@@ -182,6 +182,8 @@ export const masterAppApi = createApi({
     "masterNotifications",
     "masterAgentDeposits",
     "masterAgentWithdraws",
+    "masterUserDeposits",
+    "masterUserWithdraws",
   ],
   endpoints: () => ({}),
 });

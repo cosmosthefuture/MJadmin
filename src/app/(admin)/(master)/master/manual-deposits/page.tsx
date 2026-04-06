@@ -3,14 +3,14 @@ import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import MasterManualDepositTable from "./components/MasterManualDepositTable";
 
 export const metadata: Metadata = {
-  title: "Master Manual Deposits",
-  description: "master manual deposits",
+  title: "Manual Agent Deposits",
+  description: "manual agent deposits",
 };
 
 export default function MasterManualDepositsPage() {
   return (
     <div>
-      <PageBreadcrumb pageTitle="Manual Deposits" />
+      <PageBreadcrumb pageTitle="Manual Agent Deposits" />
       <div className="space-y-6">
         <MasterManualDepositTable />
       </div>

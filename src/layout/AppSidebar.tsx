@@ -105,13 +105,23 @@ const AppSidebar: React.FC = () => {
       });
       items.push({
         icon: <DownloadIcon size={20} />,
-        name: "Manual Deposits",
+        name: "Manual Agent Deposits",
         path: "/master/manual-deposits",
       });
       items.push({
         icon: <PaperPlaneIcon size={20} />,
-        name: "Manual Withdrawals",
+        name: "Manual Agent Withdrawals",
         path: "/master/manual-withdrawals",
+      });
+      items.push({
+        icon: <DownloadIcon size={20} />,
+        name: "Manual User Deposits",
+        path: "/master/user-manual-deposits",
+      });
+      items.push({
+        icon: <PaperPlaneIcon size={20} />,
+        name: "Manual User Withdrawals",
+        path: "/master/user-manual-withdrawals",
       });
       items.push({
         icon: <Banknote size={21} />,

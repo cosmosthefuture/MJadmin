@@ -3,14 +3,14 @@ import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import MasterManualWithdrawTable from "./components/MasterManualWithdrawTable";
 
 export const metadata: Metadata = {
-  title: "Master Manual Withdrawals",
-  description: "master manual withdrawals",
+  title: "Manual Agent Withdrawals",
+  description: "manual agent withdrawals",
 };
 
 export default function MasterManualWithdrawalsPage() {
   return (
     <div>
-      <PageBreadcrumb pageTitle="Manual Withdrawals" />
+      <PageBreadcrumb pageTitle="Manual Agent Withdrawals" />
       <div className="space-y-6">
         <MasterManualWithdrawTable />
       </div>

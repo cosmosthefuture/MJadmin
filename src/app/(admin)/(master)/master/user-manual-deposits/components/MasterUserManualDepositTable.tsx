@@ -2,7 +2,7 @@
 
 import { useAppDispatch, useAppSelector } from "@/redux/hook";
 import { setCurrentPage } from "@/redux/features/PaginationSlice";
-import { useGetMasterAgentWithdrawListsQuery } from "@/redux/features/masters/MasterAgentWithdrawApiSlice";
+import { useGetMasterUserDepositListsQuery } from "@/redux/features/masters/MasterUserDepositApiSlice";
 import { DEFAULT_PER_PAGE } from "@/lib/constants";
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
 import Pagination from "@/components/tables/Pagination";
@@ -13,7 +13,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import moment from "moment";
 
-export default function MasterManualWithdrawTable() {
+export default function MasterUserManualDepositTable() {
   const dispatch = useAppDispatch();
   const currentPage = useAppSelector((state) => state.pagination.currentPage);
   const authType = useAppSelector((state) => state.auth.authType);
@@ -21,7 +21,7 @@ export default function MasterManualWithdrawTable() {
   const [searchText, setSearchText] = useState("");
   const debouncedSearchText = useDebounce(searchText);
 
-  const { data, isLoading } = useGetMasterAgentWithdrawListsQuery(
+  const { data, isLoading } = useGetMasterUserDepositListsQuery(
     { page: currentPage, perPage: DEFAULT_PER_PAGE, search: debouncedSearchText || undefined },
     { skip: authType !== "master" }
   );
@@ -36,13 +36,13 @@ export default function MasterManualWithdrawTable() {
 
   const totalPages = data?.meta?.total_pages ?? 1;
   const perPage = data?.meta?.per_page ?? DEFAULT_PER_PAGE;
-  const withdraws = data?.data ?? [];
+  const deposits = data?.data ?? [];
 
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
       <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-white/[0.05]">
         <h3 className="text-base font-semibold text-gray-900 dark:text-white">
-          Manual Agent Withdrawals
+          Manual User Deposits
         </h3>
         <div className="w-full max-w-xs">
           <Input
@@ -56,20 +56,20 @@ export default function MasterManualWithdrawTable() {
         </div>
       </div>
       <div className="max-w-full overflow-x-auto">
-        <div className="min-w-[800px]">
+        <div className="min-w-[900px]">
           {isLoading && (
             <div className="flex items-center justify-center h-64">
               <Loading />
             </div>
           )}
 
-          {!isLoading && withdraws.length === 0 && (
+          {!isLoading && deposits.length === 0 && (
             <div className="flex items-center justify-center h-64">
-              <p className="text-gray-500">No manual withdrawals found</p>
+              <p className="text-gray-500">No manual deposits found</p>
             </div>
           )}
 
-          {!isLoading && withdraws.length > 0 && (
+          {!isLoading && deposits.length > 0 && (
             <>
               <Table>
                 <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
@@ -84,7 +84,7 @@ export default function MasterManualWithdrawTable() {
                       isHeader
                       className="px-5 py-3 text-start text-gray-500 font-medium text-theme-xs"
                     >
-                      Agent
+                      User
                     </TableCell>
                     <TableCell
                       isHeader
@@ -113,26 +113,26 @@ export default function MasterManualWithdrawTable() {
                   </TableRow>
                 </TableHeader>
                 <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-                  {withdraws.map((withdraw, index) => (
-                    <TableRow key={withdraw.id}>
+                  {deposits.map((deposit, index) => (
+                    <TableRow key={deposit.id}>
                       <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
                         {(currentPage - 1) * perPage + index + 1}
                       </TableCell>
                       <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
-                        {withdraw.agent?.name ?? "-"}
+                        {deposit.user?.name ?? "-"}
                       </TableCell>
                       <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
-                        {withdraw.agent?.phone_number ?? "-"}
+                        {deposit.user?.phone_number ?? "-"}
                       </TableCell>
                       <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
-                        {withdraw.amount}
+                        {deposit.amount}
                       </TableCell>
                       <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
-                        {withdraw.action_by?.name ?? "-"}
+                        {deposit.action_by_master?.name ?? deposit.action_by_agent?.name ?? "-"}
                       </TableCell>
                       <TableCell className="px-4 py-3 text-start text-gray-500 text-theme-sm">
-                        {withdraw.date_time
-                          ? moment(withdraw.date_time).format("DD/MM/YYYY HH:mm:ss")
+                        {deposit.date_time
+                          ? moment(deposit.date_time).format("DD/MM/YYYY HH:mm:ss")
                           : "-"}
                       </TableCell>
                     </TableRow>
