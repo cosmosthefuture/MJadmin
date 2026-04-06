@@ -85,6 +85,7 @@ const AppSidebar: React.FC = () => {
     }
 
     if (authType === "master") {
+      items.push({ icon: <Users size={20} />, name: "Users", path: "/master/users" });
       items.push({ icon: <UserCircleIcon />, name: "Agents", path: "/master/agents" });
 
       items.push({

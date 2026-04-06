@@ -172,6 +172,8 @@ export const masterAppApi = createApi({
   tagTypes: [
     "mastersApi",
     "agentsApi",
+    "masterUsers",
+    "masterUserById",
     "masterWithdrawHistory",
     "masterPaymentMethods",
     "masterWalletRecords",
