@@ -3,7 +3,6 @@ export type defaultValueT = {
 };
 export type createAdminT = {
   name: string;
-  email?: string;
   username: string;
   phone_number: string;
   password: string;

@@ -14,7 +14,6 @@ import { useAppSelector } from "@/redux/hook";
 
 type UserFormData = {
   name: string;
-  email: string;
   phone_number: string;
   username: string;
 };
@@ -25,7 +24,6 @@ export default function AgentUserCreateForm() {
   const authType = useAppSelector((state) => state.auth.authType);
   const [formData, setFormData] = useState<UserFormData>({
     name: "",
-    email: "",
     phone_number: "",
     username: "",
   });
@@ -50,7 +48,6 @@ export default function AgentUserCreateForm() {
     if (isEditMode && userData) {
       setFormData({
         name: userData.name || "",
-        email: userData.email || "",
         phone_number: userData.phone_number || "",
         username: userData.username || "",
       });
@@ -70,7 +67,6 @@ export default function AgentUserCreateForm() {
         name: formData.name,
         phone_number: formData.phone_number,
         username: formData.username,
-        ...(formData.email.trim() ? { email: formData.email.trim() } : {}),
       };
 
       if (isEditMode && userId) {
@@ -145,12 +141,6 @@ export default function AgentUserCreateForm() {
                 Phone Number *
               </label>
               <Input id="phone_number" name="phone_number" type="text" value={formData.phone_number} onChange={handleInputChange} placeholder="Enter phone number" required disabled={isLoading} />
-            </div>
-            <div>
-              <label htmlFor="email" className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Email
-              </label>
-              <Input id="email" name="email" type="email" value={formData.email} onChange={handleInputChange} placeholder="Enter email" disabled={isLoading} />
             </div>
           </div>
 

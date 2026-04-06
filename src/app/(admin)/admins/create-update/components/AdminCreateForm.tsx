@@ -45,7 +45,6 @@ export default function AdminCreateForm() {
     mode: "onBlur",
     defaultValues: {
       name: "",
-      email: "",
       username: "",
       phone_number: "",
       password: "",
@@ -76,16 +75,10 @@ export default function AdminCreateForm() {
 
   const onSubmit = async (data: createAdminT) => {
     try {
-      const trimmedEmail = data.email?.trim();
       const payload = {
         ...data,
-        email: trimmedEmail,
         permission_type_ids: selectedPermissions,
       };
-
-      if (!trimmedEmail) {
-        delete payload.email;
-      }
 
       if (editId) {
         await updateAdmin({ ...payload, id: editId }).unwrap();
@@ -124,7 +117,6 @@ export default function AdminCreateForm() {
         const response = await http.fetchDataWithToken(`/${editId}`);
         const admin = response.data;
         setValue("name", admin.name);
-        setValue("email", admin.email || "");
         setValue("username", admin.username);
         setValue("phone_number", admin.phone_number);
         const permissionIds =
@@ -173,18 +165,6 @@ export default function AdminCreateForm() {
                 type="text"
                 error={!!errors.name}
                 hint={errors.name?.message}
-              />
-            </div>
-            <div>
-              <Label>Email</Label>
-              <Input
-                {...register("email", {
-                  validate: (value) =>
-                    !value || /\S+@\S+\.\S+/.test(value) || "Entered value does not match email format.",
-                })}
-                type="email"
-                error={!!errors.email}
-                hint={errors.email?.message}
               />
             </div>
             <div>
