@@ -6,6 +6,7 @@ export type MasterItem = {
   email?: string;
   phone_number: string;
   username: string;
+  master_code?: string;
   winning_commission_percentage?: number;
   incentive_percentage?: number;
   status: string;
@@ -43,6 +44,7 @@ export type CreateMasterPayload = {
   winning_commission_percentage: number;
   password: string;
   password_confirmation: string;
+  master_code?: string;
 };
 
 export type CreateMasterResponse = {
@@ -68,6 +70,7 @@ export type UpdateMasterPayload = {
   phone_number: string;
   username: string;
   winning_commission_percentage: number;
+  master_code?: string;
 };
 
 export type AddMoneyToMasterPayload = {

@@ -18,6 +18,7 @@ type MasterCreateFormT = {
   name: string;
   phone_number: string;
   username: string;
+  master_code: string;
   winning_commission_percentage: number;
   password: string;
   password_confirmation: string;
@@ -55,6 +56,7 @@ export default function MasterCreateForm() {
       name: "",
       phone_number: "",
       username: "",
+      master_code: "",
       winning_commission_percentage: 1,
       password: "",
       password_confirmation: "",
@@ -69,6 +71,7 @@ export default function MasterCreateForm() {
     setValue("name", masterData.name || "");
     setValue("phone_number", masterData.phone_number || "");
     setValue("username", masterData.username || "");
+    setValue("master_code", masterData.master_code || "");
     setValue(
       "winning_commission_percentage",
       Number(masterData.winning_commission_percentage ?? masterData.incentive_percentage ?? 0)
@@ -83,6 +86,7 @@ export default function MasterCreateForm() {
           name: data.name,
           phone_number: data.phone_number,
           username: data.username,
+          ...(data.master_code.trim() ? { master_code: data.master_code.trim() } : {}),
           winning_commission_percentage: Number(data.winning_commission_percentage),
         }).unwrap();
         toast.success("Master updated successfully");
@@ -91,6 +95,7 @@ export default function MasterCreateForm() {
           name: data.name,
           phone_number: data.phone_number,
           username: data.username,
+          ...(data.master_code.trim() ? { master_code: data.master_code.trim() } : {}),
           winning_commission_percentage: Number(data.winning_commission_percentage),
           password: data.password,
           password_confirmation: data.password_confirmation,
@@ -250,6 +255,24 @@ export default function MasterCreateForm() {
                 disabled={isLoading}
                 error={!!errors.winning_commission_percentage}
                 hint={errors.winning_commission_percentage?.message}
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="master_code"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
+                Master Code
+              </label>
+              <Input
+                id="master_code"
+                type="text"
+                {...register("master_code")}
+                placeholder="Enter master code"
+                disabled={isLoading}
+                error={!!errors.master_code}
+                hint={errors.master_code?.message}
               />
             </div>
 
