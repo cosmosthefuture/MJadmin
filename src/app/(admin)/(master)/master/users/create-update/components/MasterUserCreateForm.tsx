@@ -16,6 +16,7 @@ type UserFormData = {
   name: string;
   phone_number: string;
   username: string;
+  agent_code: string;
 };
 
 export default function MasterUserCreateForm() {
@@ -26,6 +27,7 @@ export default function MasterUserCreateForm() {
     name: "",
     phone_number: "",
     username: "",
+    agent_code: "",
   });
 
   const [createMasterUser, { isLoading: isCreating }] = useCreateMasterUserMutation();
@@ -50,6 +52,7 @@ export default function MasterUserCreateForm() {
         name: userData.name || "",
         phone_number: userData.phone_number || "",
         username: userData.username || "",
+        agent_code: userData.agent_code || "",
       });
     }
   }, [isEditMode, userData]);
@@ -67,6 +70,7 @@ export default function MasterUserCreateForm() {
         name: formData.name,
         phone_number: formData.phone_number,
         username: formData.username,
+        agent_code: formData.agent_code,
       };
 
       if (isEditMode && userId) {
@@ -181,6 +185,24 @@ export default function MasterUserCreateForm() {
                 value={formData.phone_number}
                 onChange={handleInputChange}
                 placeholder="Enter phone number"
+                required
+                disabled={isLoading}
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="agent_code"
+                className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
+                Agent Code *
+              </label>
+              <Input
+                id="agent_code"
+                name="agent_code"
+                type="text"
+                value={formData.agent_code}
+                onChange={handleInputChange}
+                placeholder="Enter agent code"
                 required
                 disabled={isLoading}
               />

@@ -47,6 +47,7 @@ export type MasterCreateUserPayload = {
   email?: string;
   phone_number: string;
   username: string;
+  agent_code: string;
 };
 
 export type MasterUpdateUserPayload = {
@@ -55,6 +56,7 @@ export type MasterUpdateUserPayload = {
   email?: string;
   phone_number: string;
   username: string;
+  agent_code: string;
 };
 
 export type MasterVerifyUserPayload = {
