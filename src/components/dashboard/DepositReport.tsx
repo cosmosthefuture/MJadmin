@@ -14,8 +14,8 @@ const ReactApexChart = dynamic(() => import("react-apexcharts"), {
 });
 
 export default function DepositReport() {
-  const [type, setType] = useState<DepositReportType>("quarterly");
-  const [chartType, setChartType] = useState<"area" | "bar">("area");
+  const [type, setType] = useState<DepositReportType>("daily");
+  const [chartType, setChartType] = useState<"area" | "bar">("bar");
   const token = useAppSelector((state) => state.auth.token);
   const authType = useAppSelector((state) => state.auth.authType);
 
