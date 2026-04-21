@@ -71,6 +71,8 @@ export type UpdateMasterPayload = {
   username: string;
   winning_commission_percentage: number;
   master_code?: string;
+  password?: string;
+  password_confirmation?: string;
 };
 
 export type AddMoneyToMasterPayload = {

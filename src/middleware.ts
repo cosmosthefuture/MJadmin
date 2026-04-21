@@ -29,11 +29,11 @@ const ensureToken = async () => {
 
 const getHomePathByAuthType = (authType?: string | null) => {
   if (authType === "master") {
-    return "/master/agents";
+    return "/master";
   }
 
   if (authType === "agent") {
-    return "/agents/incentive-transactions";
+    return "/agents";
   }
 
   return "/";

@@ -88,6 +88,9 @@ export default function MasterCreateForm() {
           username: data.username,
           ...(data.master_code.trim() ? { master_code: data.master_code.trim() } : {}),
           winning_commission_percentage: Number(data.winning_commission_percentage),
+          ...(data.password.trim()
+            ? { password: data.password, password_confirmation: data.password_confirmation }
+            : {}),
         }).unwrap();
         toast.success("Master updated successfully");
       } else {

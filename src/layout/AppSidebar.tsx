@@ -80,6 +80,18 @@ const AppSidebar: React.FC = () => {
   const navItems = useMemo(() => {
     const items = [...baseNavItems];
 
+    if (authType === "admin") {
+      items.push({ icon: <GridIcon />, name: "Dashboard", path: "/" });
+    }
+
+    if (authType === "master") {
+      items.push({ icon: <GridIcon />, name: "Dashboard", path: "/master" });
+    }
+
+    if (authType === "agent") {
+      items.push({ icon: <GridIcon />, name: "Dashboard", path: "/agents" });
+    }
+
     if (hadAdminsViewPermission) {
       items.push({ icon: <GridIcon />, name: "Admins", path: "/admins" });
     }

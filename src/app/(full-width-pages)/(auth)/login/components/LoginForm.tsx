@@ -28,11 +28,11 @@ type Errors = {
 
 const getRedirectPathByMode = (mode: AuthMode) => {
   if (mode === "master") {
-    return "/master/agents";
+    return "/master";
   }
 
   if (mode === "agent") {
-    return "/agents/incentive-transactions";
+    return "/agents";
   }
 
   return "/";
