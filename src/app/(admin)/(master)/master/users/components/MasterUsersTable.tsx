@@ -489,7 +489,9 @@ export default function MasterUsersTable() {
       >
         <div>
           <h3 className="mb-2 text-xl font-semibold text-gray-900 dark:text-white">Reset Password</h3>
-          <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">Reset the user's password.</p>
+          <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
+            Reset the user&apos;s password.
+          </p>
           <form onSubmit={handleResetPassword} className="space-y-4">
             <div>
               <Label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
