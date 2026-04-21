@@ -1,31 +1,139 @@
 "use client";
 
 import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
-import { useState, useEffect } from "react";
-import { useGetDepositDailyListsQuery } from "@/redux/features/admin/AdminHouseCutReportApiSlice";
+import { useState, useEffect, useMemo } from "react";
+// import { useGetDepositDailyListsQuery } from "@/redux/features/admin/AdminHouseCutReportApiSlice";
 import Pagination from "@/components/tables/Pagination";
-import Loading from "@/components/common/Loading";
 import moment from "moment";
 import DatePicker from "@/components/form/date-picker";
+
+type DepositSampleRow = {
+  id: number;
+  report_date: string; // YYYY-MM-DD
+  request_deposit: string;
+  manual_deposit: string;
+  total_deposit: string;
+};
+
+const SAMPLE_ROWS: DepositSampleRow[] = [
+  {
+    id: 1,
+    report_date: "2026-04-01",
+    request_deposit: "120000",
+    manual_deposit: "60000",
+    total_deposit: "180000",
+  },
+  {
+    id: 2,
+    report_date: "2026-04-02",
+    request_deposit: "90000",
+    manual_deposit: "30000",
+    total_deposit: "120000",
+  },
+  {
+    id: 3,
+    report_date: "2026-04-03",
+    request_deposit: "150000",
+    manual_deposit: "60000",
+    total_deposit: "210000",
+  },
+  {
+    id: 4,
+    report_date: "2026-04-04",
+    request_deposit: "110000",
+    manual_deposit: "50000",
+    total_deposit: "160000",
+  },
+  {
+    id: 5,
+    report_date: "2026-04-05",
+    request_deposit: "170000",
+    manual_deposit: "70000",
+    total_deposit: "240000",
+  },
+  {
+    id: 6,
+    report_date: "2026-04-06",
+    request_deposit: "140000",
+    manual_deposit: "60000",
+    total_deposit: "200000",
+  },
+  {
+    id: 7,
+    report_date: "2026-04-07",
+    request_deposit: "160000",
+    manual_deposit: "60000",
+    total_deposit: "220000",
+  },
+  {
+    id: 8,
+    report_date: "2026-04-08",
+    request_deposit: "145000",
+    manual_deposit: "55000",
+    total_deposit: "200000",
+  },
+  {
+    id: 9,
+    report_date: "2026-04-09",
+    request_deposit: "175000",
+    manual_deposit: "65000",
+    total_deposit: "240000",
+  },
+  {
+    id: 10,
+    report_date: "2026-04-10",
+    request_deposit: "125000",
+    manual_deposit: "45000",
+    total_deposit: "170000",
+  },
+  {
+    id: 11,
+    report_date: "2026-04-11",
+    request_deposit: "150000",
+    manual_deposit: "50000",
+    total_deposit: "200000",
+  },
+  {
+    id: 12,
+    report_date: "2026-04-12",
+    request_deposit: "132000",
+    manual_deposit: "48000",
+    total_deposit: "180000",
+  },
+];
+
+const PER_PAGE = 10;
 
 export default function DepositTable() {
   const [page, setPage] = useState(1);
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
 
-  const { data, isLoading } = useGetDepositDailyListsQuery({
-    page,
-    perPage: 10,
-    startDate: startDate || undefined,
-    endDate: endDate || undefined,
-  });
+  // TODO: Re-enable API call when backend is ready again.
+  // const { data, isLoading } = useGetDepositDailyListsQuery({
+  //   page,
+  //   perPage: 10,
+  //   startDate: startDate || undefined,
+  //   endDate: endDate || undefined,
+  // });
 
   useEffect(() => {
     setPage(1);
   }, [startDate, endDate]);
 
-  const totalPages = data?.meta?.total_pages ?? 1;
-  const items = data?.data ?? [];
+  const filteredRows = useMemo(() => {
+    const start = startDate ? moment(startDate, "YYYY-MM-DD") : null;
+    const end = endDate ? moment(endDate, "YYYY-MM-DD") : null;
+    return SAMPLE_ROWS.filter((row) => {
+      const d = moment(row.report_date, "YYYY-MM-DD");
+      if (start && d.isBefore(start, "day")) return false;
+      if (end && d.isAfter(end, "day")) return false;
+      return true;
+    });
+  }, [startDate, endDate]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredRows.length / PER_PAGE));
+  const items = filteredRows.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
   return (
     <div className="mt-8">
@@ -44,13 +152,7 @@ export default function DepositTable() {
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
         <div className="max-w-full overflow-x-auto">
           <div className="min-w-[900px]">
-            {isLoading && (
-              <div className="flex items-center justify-center h-64">
-                <Loading />
-              </div>
-            )}
-
-            {!isLoading && items.length === 0 && (
+            {items.length === 0 && (
               <div className="flex items-center justify-center h-64">
                 <p className="text-gray-500">No data found</p>
               </div>

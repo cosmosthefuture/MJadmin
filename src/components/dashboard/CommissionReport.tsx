@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import { useAppSelector } from "@/redux/hook";
 import {
   HouseCutReportType,
-  useGetHouseCutReportQuery,
+  // useGetHouseCutReportQuery,
 } from "@/redux/features/admin/AdminHouseCutReportApiSlice";
 import HouseCutTable from "./HouseCutTable";
 
@@ -13,29 +13,51 @@ const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
 });
 
+const SAMPLE_HOUSE_CUT: Record<
+  HouseCutReportType,
+  { categories: string[]; series: { name: string; data: number[] }[] }
+> = {
+  daily: {
+    categories: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    series: [{ name: "House Cut", data: [120000, 90000, 150000, 110000, 170000, 140000, 160000] }],
+  },
+  monthly: {
+    categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+    series: [{ name: "House Cut", data: [2100000, 1800000, 2500000, 2300000, 2700000, 2600000] }],
+  },
+  quarterly: {
+    categories: ["Q1", "Q2", "Q3", "Q4"],
+    series: [{ name: "House Cut", data: [6500000, 7200000, 8100000, 7800000] }],
+  },
+};
+
 export default function CommissionReport() {
   const [type, setType] = useState<HouseCutReportType>("daily");
   const [chartType, setChartType] = useState<"area" | "bar">("bar");
-  const token = useAppSelector((state) => state.auth.token);
   const authType = useAppSelector((state) => state.auth.authType);
 
   const isAdmin = authType === "admin";
 
-  const { data, isFetching, isError } = useGetHouseCutReportQuery(
-    { type },
-    { skip: !token || !isAdmin }
-  );
+  // TODO: Re-enable API call when backend is ready again.
+  // const token = useAppSelector((state) => state.auth.token);
+  // const { data, isFetching, isError } = useGetHouseCutReportQuery(
+  //   { type },
+  //   { skip: !token || !isAdmin }
+  // );
+  const isFetching = false;
+  const isError = false;
+  const data = useMemo(() => SAMPLE_HOUSE_CUT[type], [type]);
 
   const chartSeries = useMemo(() => {
     if (isFetching) return [];
-    const series = data?.data?.series ?? [];
+    const series = data?.series ?? [];
     return series.map((s) => ({ name: s.name, data: [...s.data] }));
-  }, [isFetching, data?.data?.series]);
+  }, [isFetching, data?.series]);
 
   const chartCategories = useMemo(() => {
     if (isFetching) return [];
-    return [...(data?.data?.categories ?? [])];
-  }, [isFetching, data?.data?.categories]);
+    return [...(data?.categories ?? [])];
+  }, [isFetching, data?.categories]);
 
   const options: ApexOptions = useMemo(() => {
     return {
