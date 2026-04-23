@@ -7,6 +7,18 @@ const MAX_AGE = 60 * 60 * 24 * 1; // 1 days in seconds
 const ALGORITHM = "HS256";
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 
+const getCookieSecureFlag = () => {
+  const explicit = (process.env.COOKIE_SECURE || "").toLowerCase();
+  if (explicit === "true") return true;
+  if (explicit === "false") return false;
+
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_APP_URL || "";
+  if (siteUrl.startsWith("https://")) return true;
+  if (siteUrl.startsWith("http://")) return false;
+
+  return process.env.NODE_ENV === "production";
+};
+
 const encrypt = async (data: Record<string, unknown>) => {
   const payload = await new SignJWT(data)
     .setProtectedHeader({ alg: ALGORITHM })
@@ -49,7 +61,7 @@ const setCookie = async (name: string, formData: FormData) => {
   tempCookie.set(name, encryptedData, {
     httpOnly: true,
     maxAge: MAX_AGE, // maxAge in seconds
-    secure: process.env.NODE_ENV === "production",
+    secure: getCookieSecureFlag(),
     sameSite: "strict",
   });
 };
