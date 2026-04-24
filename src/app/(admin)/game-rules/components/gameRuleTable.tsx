@@ -158,7 +158,7 @@ export default function GameRuleTable() {
                     {rule.rule_name}
                   </TableCell>
                   <TableCell className="px-4 py-3 text-start text-theme-sm text-gray-500">
-                    {rule.match_qty_per_round}
+                    {rule.round_qty_per_match ?? rule.match_qty_per_round ?? "-"}
                   </TableCell>
                   <TableCell className="px-4 py-3 text-start text-theme-sm text-gray-500">
                     {rule.max_player}

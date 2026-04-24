@@ -1,5 +1,5 @@
 "use server";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { SignJWT, jwtVerify } from "jose";
 
 // const MAX_AGE = 60 * 60 * 24 * 30; // 30 days in seconds
@@ -7,10 +7,20 @@ const MAX_AGE = 60 * 60 * 24 * 1; // 1 days in seconds
 const ALGORITHM = "HS256";
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 
-const getCookieSecureFlag = () => {
+const isHttpsRequest = async () => {
+  const hdrs = await headers();
+  const proto = hdrs.get("x-forwarded-proto") ?? hdrs.get("X-Forwarded-Proto");
+  const forwardedProto = proto?.split(",")[0]?.trim()?.toLowerCase();
+  return forwardedProto === "https";
+};
+
+const getCookieSecureFlag = async () => {
   const explicit = (process.env.COOKIE_SECURE || "").toLowerCase();
   if (explicit === "true") return true;
   if (explicit === "false") return false;
+
+  // When behind a reverse proxy/ingress, prefer `X-Forwarded-Proto`
+  if (await isHttpsRequest()) return true;
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_APP_URL || "";
   if (siteUrl.startsWith("https://")) return true;
@@ -61,8 +71,9 @@ const setCookie = async (name: string, formData: FormData) => {
   tempCookie.set(name, encryptedData, {
     httpOnly: true,
     maxAge: MAX_AGE, // maxAge in seconds
-    secure: getCookieSecureFlag(),
+    secure: await getCookieSecureFlag(),
     sameSite: "strict",
+    path: "/",
   });
 };
 

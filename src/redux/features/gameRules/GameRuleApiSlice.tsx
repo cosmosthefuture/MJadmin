@@ -41,7 +41,10 @@ export type GameRuleGame = {
 export type GameRuleItem = {
   id: number;
   rule_name: string;
-  match_qty_per_round: number;
+  // backend field name
+  round_qty_per_match?: number;
+  // legacy/alternate field name (kept for compatibility)
+  match_qty_per_round?: number;
   max_player: number;
   bet_amount: number;
   game_id: number;
@@ -73,7 +76,7 @@ export type GameRuleResponse = {
 
 export type CreateGameRuleRequest = {
   rule_name: string;
-  match_qty_per_round: number;
+  round_qty_per_match: number;
   max_player: number;
   bet_amount: number;
   fees: GameRuleFee[];

@@ -22,7 +22,7 @@ type FeeFormValue = {
 
 type FormValues = {
   rule_name: string;
-  match_qty_per_round: number;
+  round_qty_per_match: number;
   max_player: number;
   bet_amount: number;
   fees: [FeeFormValue, FeeFormValue, FeeFormValue];
@@ -58,11 +58,13 @@ export default function GameRuleForm() {
     register,
     handleSubmit,
     formState: { errors },
+    setError,
+    clearErrors,
     setValue,
   } = useForm<FormValues>({
     defaultValues: {
       rule_name: "",
-      match_qty_per_round: undefined as unknown as number,
+      round_qty_per_match: undefined as unknown as number,
       max_player: undefined as unknown as number,
       bet_amount: undefined as unknown as number,
       fees: defaultFees,
@@ -74,7 +76,11 @@ export default function GameRuleForm() {
 
     const rule = ruleData.data;
     setValue("rule_name", rule.rule_name);
-    setValue("match_qty_per_round", rule.match_qty_per_round);
+    setValue(
+      "round_qty_per_match",
+      ((rule as unknown as { round_qty_per_match?: number }).round_qty_per_match ??
+        (rule as unknown as { match_qty_per_round?: number }).match_qty_per_round) as number
+    );
     setValue("max_player", rule.max_player);
     setValue("bet_amount", rule.bet_amount);
 
@@ -89,9 +95,10 @@ export default function GameRuleForm() {
   }, [ruleData, setValue]);
 
   const onSubmit = async (values: FormValues) => {
+    clearErrors();
     const payload = {
       rule_name: values.rule_name.trim(),
-      match_qty_per_round: Number(values.match_qty_per_round),
+      round_qty_per_match: Number(values.round_qty_per_match),
       max_player: Number(values.max_player),
       bet_amount: Number(values.bet_amount),
       fees: values.fees.map((fee) => ({
@@ -111,6 +118,20 @@ export default function GameRuleForm() {
       }
       router.push("/game-rules");
     } catch (error: unknown) {
+      const apiErrors =
+        error && typeof error === "object" && "data" in error
+          ? (error as { data?: { errors?: Record<string, string[] | string> } }).data?.errors
+          : undefined;
+
+      if (apiErrors && typeof apiErrors === "object") {
+        for (const [key, value] of Object.entries(apiErrors)) {
+          const message = Array.isArray(value) ? value[0] : value;
+          if (!message) continue;
+
+          setError(key as any, { type: "server", message: String(message) });
+        }
+      }
+
       const message =
         error && typeof error === "object" && "data" in error
           ? (error as { data?: { message?: string; response?: { message?: string } } }).data
@@ -148,14 +169,14 @@ export default function GameRuleForm() {
             <Input
               type="number"
               placeholder="4"
-              {...register("match_qty_per_round", {
+              {...register("round_qty_per_match", {
                 required: "Required",
                 valueAsNumber: true,
                 min: { value: 1, message: "Must be >= 1" },
               })}
             />
-            {errors.match_qty_per_round && (
-              <p className="mt-1 text-xs text-red-500">{errors.match_qty_per_round.message}</p>
+            {errors.round_qty_per_match && (
+              <p className="mt-1 text-xs text-red-500">{errors.round_qty_per_match.message}</p>
             )}
           </div>
 
