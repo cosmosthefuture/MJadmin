@@ -100,11 +100,6 @@ const AppSidebar: React.FC = () => {
       items.push({ icon: <Users size={20} />, name: "Users", path: "/master/users" });
       items.push({ icon: <UserCircleIcon />, name: "Agents", path: "/master/agents" });
       items.push({
-        icon: <HandCoins size={21} />,
-        name: "Daily Wallet Summary",
-        path: "/master/daily-wallet-summary",
-      });
-      items.push({
         icon: <Banknote size={21} />,
         name: "Wallet Records",
         path: "/master/wallet-records",
@@ -128,11 +123,6 @@ const AppSidebar: React.FC = () => {
         icon: <PaperPlaneIcon size={20} />,
         name: "Manual User Withdrawals",
         path: "/master/user-manual-withdrawals",
-      });
-      items.push({
-        icon: <Banknote size={21} />,
-        name: "Daily Cashbook Records",
-        path: "/master/daily-cashbook-records",
       });
       items.push({
         icon: <TableIcon />,

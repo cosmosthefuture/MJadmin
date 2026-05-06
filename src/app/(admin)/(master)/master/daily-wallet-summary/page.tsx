@@ -1,6 +1,5 @@
-import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import { Metadata } from "next";
-import MasterDailyWalletSummaryTable from "./components/MasterDailyWalletSummaryTable";
+import { notFound } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Master Daily Wallet Summary",
@@ -8,12 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function MasterDailyWalletSummaryPage() {
-  return (
-    <div>
-      <PageBreadcrumb pageTitle="Daily Wallet Summary" />
-      <div className="space-y-6">
-        <MasterDailyWalletSummaryTable />
-      </div>
-    </div>
-  );
+  notFound();
 }
