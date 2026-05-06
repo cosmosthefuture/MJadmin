@@ -124,11 +124,6 @@ const AppSidebar: React.FC = () => {
         name: "Manual User Withdrawals",
         path: "/master/user-manual-withdrawals",
       });
-      items.push({
-        icon: <TableIcon />,
-        name: "Monthly Incentive Report",
-        path: "/master/monthly-incentive-report",
-      });
     }
 
     if (authType === "agent") {

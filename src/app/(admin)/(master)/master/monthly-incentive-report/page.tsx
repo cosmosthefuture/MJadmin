@@ -1,6 +1,5 @@
-import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import { Metadata } from "next";
-import MasterMonthlyIncentiveReportTable from "./components/MasterMonthlyIncentiveReportTable";
+import { notFound } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Master Monthly Incentive Report",
@@ -8,12 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function MasterMonthlyIncentiveReportPage() {
-  return (
-    <div>
-      <PageBreadcrumb pageTitle="Master Monthly Incentive Report" />
-      <div className="space-y-6">
-        <MasterMonthlyIncentiveReportTable />
-      </div>
-    </div>
-  );
+  notFound();
 }
