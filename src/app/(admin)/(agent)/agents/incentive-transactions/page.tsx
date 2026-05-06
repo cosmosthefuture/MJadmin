@@ -1,6 +1,5 @@
-import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import { Metadata } from "next";
-import AgentIncentiveTransactionTable from "./components/AgentIncentiveTransactionTable";
+import { notFound } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Reports",
@@ -8,12 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function AgentIncentiveTransactionsPage() {
-  return (
-    <div>
-      <PageBreadcrumb pageTitle="Reports" />
-      <div className="space-y-6">
-        <AgentIncentiveTransactionTable />
-      </div>
-    </div>
-  );
+  notFound();
 }
