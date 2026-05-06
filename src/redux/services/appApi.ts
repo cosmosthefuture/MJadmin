@@ -192,7 +192,6 @@ export const agentAppApi = createApi({
     "agentUserById",
     "agentWalletRecords",
     "agentPaymentMethods",
-    "agentWithdrawHistory",
     "agentDailyCashbookRecords",
     "agentNotifications",
     "agentUserDeposits",

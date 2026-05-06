@@ -13,7 +13,6 @@ import {
 import { useGetAgentNotificationsQuery } from "@/redux/features/notifications/AgentNotificationApiSlice";
 import { useGetDepositRequestsQuery } from "@/redux/features/deposit/DepositApiSlice";
 import { useGetWithdrawRequestsQuery } from "@/redux/features/withdraw/WithdrawApiSlice";
-import { useGetAgentWithdrawHistoryQuery } from "@/redux/features/agents/AgentWithdrawHistoryApiSlice";
 import { DEFAULT_PER_PAGE } from "@/lib/constants";
 
 // This listener is responsible for reacting to foreground FCM messages
@@ -53,12 +52,6 @@ export function NotificationListener() {
   const { refetch: refetchUserWithdrawRequests } = useGetWithdrawRequestsQuery(
     { page: 1, perPage: DEFAULT_PER_PAGE },
     { skip: !isLoggedIn || authType !== "admin" }
-  );
-
-  // Agent table: withdraw history
-  const { refetch: refetchAgentWithdrawHistory } = useGetAgentWithdrawHistoryQuery(
-    { page: 1, per_page: DEFAULT_PER_PAGE },
-    { skip: !isLoggedIn || authType !== "agent" }
   );
 
   useEffect(() => {
@@ -101,7 +94,6 @@ export function NotificationListener() {
         // Agent: always refresh agent notifications + agent withdraw history and play sound
         if (authType === "agent") {
           refetchAgentNotifications();
-          refetchAgentWithdrawHistory();
           playNotificationSound("agent");
         }
       }
@@ -119,7 +111,6 @@ export function NotificationListener() {
     refetchAgentNotifications,
     refetchUserDepositRequests,
     refetchUserWithdrawRequests,
-    refetchAgentWithdrawHistory,
   ]);
 
   return null;

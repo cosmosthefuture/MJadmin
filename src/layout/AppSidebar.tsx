@@ -128,11 +128,6 @@ const AppSidebar: React.FC = () => {
     if (authType === "agent") {
       items.push({ icon: <Users size={20} />, name: "Users", path: "/agents/users" });
       items.push({
-        icon: <BanknoteArrowUp size={21} />,
-        name: "Withdrawal Histories",
-        path: "/agents/withdraw-history",
-      });
-      items.push({
         icon: <Banknote size={21} />,
         name: "Wallet Records",
         path: "/agents/wallet-records",

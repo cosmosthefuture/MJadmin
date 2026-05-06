@@ -62,7 +62,7 @@ export const agentWithdrawRequestForAgentApiSlice = agentAppApi.injectEndpoints(
         method: "POST",
         body,
       }),
-      invalidatesTags: () => [{ type: "agentWithdrawHistory" }, { type: "agentPaymentMethods" }],
+      invalidatesTags: () => [{ type: "agentPaymentMethods" }],
     }),
   }),
 });
