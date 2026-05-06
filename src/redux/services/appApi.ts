@@ -174,8 +174,6 @@ export const masterAppApi = createApi({
     "agentsApi",
     "masterUsers",
     "masterUserById",
-    "masterWithdrawHistory",
-    "masterPaymentMethods",
     "masterWalletRecords",
     "masterDailyWalletSummary",
     "masterDailyCashbookRecords",

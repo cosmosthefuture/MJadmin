@@ -99,12 +99,6 @@ const AppSidebar: React.FC = () => {
     if (authType === "master") {
       items.push({ icon: <Users size={20} />, name: "Users", path: "/master/users" });
       items.push({ icon: <UserCircleIcon />, name: "Agents", path: "/master/agents" });
-
-      items.push({
-        icon: <BanknoteArrowUp size={21} />,
-        name: "Withdraw History",
-        path: "/master/withdraw-history",
-      });
       items.push({
         icon: <HandCoins size={21} />,
         name: "Daily Wallet Summary",
