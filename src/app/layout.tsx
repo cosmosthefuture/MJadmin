@@ -1,4 +1,3 @@
-import { Outfit } from "next/font/google";
 import "./globals.css";
 
 import { SidebarProvider } from "@/context/SidebarContext";
@@ -6,9 +5,6 @@ import { ThemeProvider } from "@/context/ThemeContext";
 import { Providers } from "@/redux/provider";
 import { Toaster } from "@/components/ui/sonner";
 import { NotificationListener } from "@/components/NotificationListener";
-const outfit = Outfit({
-  subsets: ["latin"],
-});
 
 export default function RootLayout({
   children,
@@ -17,7 +13,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${outfit.className} dark:bg-gray-900`}>
+      <body className="dark:bg-gray-900">
         <ThemeProvider>
           <SidebarProvider>
             <Providers>

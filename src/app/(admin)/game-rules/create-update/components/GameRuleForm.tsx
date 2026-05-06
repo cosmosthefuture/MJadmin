@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { FieldPath, useForm } from "react-hook-form";
 import Input from "@/components/form/input/InputField";
 import Button from "@/components/ui/button/Button";
 import { toast } from "sonner";
@@ -128,7 +128,7 @@ export default function GameRuleForm() {
           const message = Array.isArray(value) ? value[0] : value;
           if (!message) continue;
 
-          setError(key as any, { type: "server", message: String(message) });
+          setError(key as FieldPath<FormValues>, { type: "server", message: String(message) });
         }
       }
 

@@ -29,7 +29,6 @@ import {
   Gamepad2,
   HandCoins,
   Banknote,
-  ChartColumnBig,
 } from "lucide-react";
 
 type NavItem = {
@@ -142,22 +141,6 @@ const AppSidebar: React.FC = () => {
         icon: <PaperPlaneIcon size={20} />,
         name: "Manual Withdrawals",
         path: "/agents/manual-withdrawals",
-      });
-
-      items.push({
-        icon: <HandCoins size={21} />,
-        name: "Daily Wallet Summary",
-        path: "/agents/daily-wallet-summary",
-      });
-      items.push({
-        icon: <Banknote size={21} />,
-        name: "Daily Cashbook Records",
-        path: "/agents/daily-cashbook-records",
-      });
-      items.push({
-        icon: <ChartColumnBig size={21} />,
-        name: "Monthly Incentive Summary",
-        path: "/agents/monthly-incentive-summary",
       });
     }
     if (hadUsersViewPermission) {
