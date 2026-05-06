@@ -40,7 +40,7 @@ export default function ManualWithdrawTable() {
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
       <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-white/[0.05]">
         <h3 className="text-base font-semibold text-gray-900 dark:text-white">
-          Master Manual Withdraw Requests
+          Master Manual Withdrawals
         </h3>
         <div className="w-full max-w-xs">
           <Input
@@ -63,7 +63,7 @@ export default function ManualWithdrawTable() {
 
           {!isLoading && withdraws.length === 0 && (
             <div className="flex items-center justify-center h-64">
-              <p className="text-gray-500">No manual withdraw requests found</p>
+              <p className="text-gray-500">No manual withdrawals found</p>
             </div>
           )}
 
