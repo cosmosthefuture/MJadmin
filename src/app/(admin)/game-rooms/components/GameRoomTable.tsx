@@ -49,6 +49,7 @@ export default function GameRoomTable() {
   });
   const [togglingId, setTogglingId] = useState<number | null>(null);
   const [clearingId, setClearingId] = useState<number | null>(null);
+  const [isResetting, setIsResetting] = useState(false);
   const debouncedSearchText = useDebounce(searchText);
 
   const { data, isLoading } = useGetGameRoomsQuery({
@@ -171,10 +172,30 @@ export default function GameRoomTable() {
     }
   };
 
+  const handleDevReset = async () => {
+    if (!confirm("Are you sure you want to reset the dev environment?")) return;
+
+    setIsResetting(true);
+    try {
+      const baseUrl = window.location.hostname.includes("localhost")
+        ? "http://localhost:3001"
+        : "https://ws.playngo.website";
+
+      await axios.post(`${baseUrl}/dev/reset`);
+      toast.success("Dev environment reset successfully");
+    } catch (error) {
+      console.error("Failed to reset dev environment", error);
+      toast.error("Failed to reset dev environment");
+    } finally {
+      setIsResetting(false);
+    }
+  };
+
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
       <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-white/[0.05]">
         <h3 className="text-base font-semibold text-gray-900 dark:text-white">Game Rooms</h3>
+
         <div className="flex items-center gap-3 w-full max-w-xl justify-end">
           <div className="w-full max-w-xs">
             <Input
@@ -186,6 +207,14 @@ export default function GameRoomTable() {
               }}
             />
           </div>
+          <Button
+            variant="outline"
+            className="border-red-500 text-red-500 hover:bg-red-50"
+            onClick={handleDevReset}
+            disabled={isResetting}
+          >
+            {isResetting ? "Resetting..." : "Reset Dev"}
+          </Button>
           <Button onClick={() => setIsModalOpen(true)}>Create Room</Button>
         </div>
       </div>
