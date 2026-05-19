@@ -177,7 +177,7 @@ export default function GameRoomTable() {
 
     setIsResetting(true);
     try {
-      const baseUrl = window.location.hostname.includes("mjbackend")
+      const baseUrl = window.location.hostname.includes("localhost")
         ? "http://mjbackend.test/api"
         : "https://admin.playngo.website/";
 
