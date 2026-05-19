@@ -22,6 +22,9 @@ import Select from "@/components/form/Select";
 import { useGetGamesQuery } from "@/redux/features/game/GameApiSlice";
 import { useGetGameRulesQuery } from "@/redux/features/gameRules/GameRuleApiSlice";
 import { Switch } from "@/components/ui/switch";
+import axios from "axios";
+import { toast } from "sonner";
+import { getCookie } from "@/utils/cookie";
 
 const statusColorMap: Record<string, "success" | "error" | "warning" | "dark"> = {
   active: "success",
@@ -36,6 +39,8 @@ export default function GameRoomTable() {
   const [searchText, setSearchText] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRoom, setEditingRoom] = useState<number | null>(null);
+  const [roomToClear, setRoomToClear] = useState<number | null>(null);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [formValues, setFormValues] = useState({
     room_name: "",
     room_code: "",
@@ -43,6 +48,7 @@ export default function GameRoomTable() {
     mah_jong_game_rule_id: "",
   });
   const [togglingId, setTogglingId] = useState<number | null>(null);
+  const [clearingId, setClearingId] = useState<number | null>(null);
   const debouncedSearchText = useDebounce(searchText);
 
   const { data, isLoading } = useGetGameRoomsQuery({
@@ -130,6 +136,38 @@ export default function GameRoomTable() {
       console.error("Failed to toggle game room status", error);
     } finally {
       setTogglingId(null);
+    }
+  };
+
+  const handleClearRoomState = async (roomId: number) => {
+    setClearingId(roomId);
+    try {
+      const cookieRes = await getCookie("userInfo");
+      const userInfo = cookieRes ? JSON.parse(cookieRes) : null;
+      const token = userInfo?.data?.userData?.token;
+
+      const baseUrl = window.location.hostname.includes("localhost")
+        ? "http://localhost:3001"
+        : "https://ws.playngo.website";
+
+      await axios.post(
+        `${baseUrl}/health/state/clear/${roomId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+        }
+      );
+      toast.success("Room state cleared successfully");
+      setIsConfirmModalOpen(false);
+      setRoomToClear(null);
+    } catch (error) {
+      console.error("Failed to clear room state", error);
+      toast.error("Failed to clear room state");
+    } finally {
+      setClearingId(null);
     }
   };
 
@@ -260,6 +298,34 @@ export default function GameRoomTable() {
                       <div className="flex items-center gap-2">
                         <button
                           type="button"
+                          title="Clear Room State"
+                          disabled={clearingId === room.id}
+                          onClick={() => {
+                            setRoomToClear(room.id);
+                            setIsConfirmModalOpen(true);
+                          }}
+                          className={`p-2 hover:border-orange-400 hover:text-orange-600 transition-colors ${
+                            clearingId === room.id ? "opacity-50 cursor-not-allowed" : ""
+                          }`}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width={20}
+                            height={20}
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="text-gray-600"
+                          >
+                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                            <path d="M3 3v5h5" />
+                          </svg>
+                        </button>
+                        <button
+                          type="button"
                           title="Edit Game Room"
                           onClick={() => {
                             setEditingRoom(room.id);
@@ -388,6 +454,43 @@ export default function GameRoomTable() {
               </Button>
             </div>
           </form>
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={isConfirmModalOpen}
+        onClose={() => {
+          setIsConfirmModalOpen(false);
+          setRoomToClear(null);
+        }}
+        className="max-w-md"
+      >
+        <div className="p-6">
+          <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            Confirm Action
+          </h4>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+            Are you sure you want to clear the state for this room? This action cannot be undone.
+          </p>
+          <div className="flex justify-end gap-3">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsConfirmModalOpen(false);
+                setRoomToClear(null);
+              }}
+              disabled={clearingId !== null}
+            >
+              Cancel
+            </Button>
+            <Button
+              className="bg-red-500 hover:bg-red-600 text-white"
+              onClick={() => roomToClear && handleClearRoomState(roomToClear)}
+              disabled={clearingId !== null}
+            >
+              {clearingId !== null ? "Clearing..." : "Clear State"}
+            </Button>
+          </div>
         </div>
       </Modal>
     </div>
