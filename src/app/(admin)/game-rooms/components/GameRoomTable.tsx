@@ -209,13 +209,15 @@ export default function GameRoomTable() {
           </div>
           <Button
             variant="outline"
-            className="border-red-500 text-red-500 hover:bg-red-50"
+            className="border-red-500 text-red-500 hover:bg-red-50 whitespace-nowrap min-w-[120px] shrink-0"
             onClick={handleDevReset}
             disabled={isResetting}
           >
             {isResetting ? "Resetting..." : "Reset Dev"}
           </Button>
-          <Button onClick={() => setIsModalOpen(true)}>Create Room</Button>
+          <Button className="whitespace-nowrap shrink-0" onClick={() => setIsModalOpen(true)}>
+            Create Room
+          </Button>
         </div>
       </div>
       <div className="max-w-full overflow-x-auto">
