@@ -177,9 +177,9 @@ export default function GameRoomTable() {
 
     setIsResetting(true);
     try {
-      const baseUrl = window.location.hostname.includes("localhost")
-        ? "http://localhost:3001"
-        : "https://ws.playngo.website";
+      const baseUrl = window.location.hostname.includes("mjbackend")
+        ? "http://mjbackend.test/api"
+        : "https://admin.playngo.website/";
 
       await axios.post(`${baseUrl}/dev/reset`);
       toast.success("Dev environment reset successfully");
