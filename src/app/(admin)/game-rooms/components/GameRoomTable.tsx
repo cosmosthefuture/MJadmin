@@ -179,7 +179,7 @@ export default function GameRoomTable() {
     try {
       const baseUrl = window.location.hostname.includes("localhost")
         ? "http://mjbackend.test/api"
-        : "https://admin.playngo.website/";
+        : "https://api.playngo.website/api";
 
       await axios.post(`${baseUrl}/dev/reset`);
       toast.success("Dev environment reset successfully");
@@ -213,7 +213,7 @@ export default function GameRoomTable() {
             onClick={handleDevReset}
             disabled={isResetting}
           >
-            {isResetting ? "Resetting..." : "Reset Dev"}
+            {isResetting ? "Resetting..." : "Reset DB"}
           </Button>
           <Button className="whitespace-nowrap shrink-0" onClick={() => setIsModalOpen(true)}>
             Create Room
